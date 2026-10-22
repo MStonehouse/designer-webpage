@@ -78,8 +78,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* ---------- Mobile dock (thumb reach) ---------- */
 /* Moves only on the GPU (transform), no live blur behind it: smooth on iPhone */
-.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate3d(-50%,0,0);will-change:transform;backface-visibility:hidden;z-index:35;display:flex;gap:2px;padding:5px;border-radius:999px;background:color-mix(in srgb,var(--night) 96%,transparent);box-shadow:0 10px 30px -10px rgba(0,0,0,.45);transition:transform .5s var(--ease)}
-.dock.away{transform:translate3d(-50%,calc(100% + 40px),0)}
+.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate3d(-50%,0,0);will-change:transform;backface-visibility:hidden;z-index:35;display:flex;gap:2px;padding:5px;border-radius:999px;background:color-mix(in srgb,var(--night) 96%,transparent);box-shadow:0 10px 30px -10px rgba(0,0,0,.45);transition:transform .5s var(--ease),opacity .35s var(--ease)}
+/* Hidden: slide past its own height + its gap + the iPhone home-bar area, and fade so the shadow can't peek */
+.dock.away{transform:translate3d(-50%,calc(100% + 14px + env(safe-area-inset-bottom,0px) + 48px),0);opacity:0;pointer-events:none}
 .dock a{font:400 14px/1 var(--sans);color:var(--night-muted);text-decoration:none;padding:13px 17px;border-radius:999px;transition:color .25s,background .25s;white-space:nowrap}
 .dock a[aria-current="page"]{color:var(--night);background:var(--night-ink)}
 @media (min-width:760px){.dock{display:none}}
@@ -672,14 +673,15 @@ function viewWork() {
   </div></div>`;
 }
 /* One swipeable strip per client: key visual first, then the project images.
-   A copy of the last image sits before the first and a copy of the first after the last,
-   so swiping past either end lands on a copy and we silently jump to the real slide: a loop. */
+   Copies of the last two images sit before the first, and copies of the first two after the last.
+   Swiping past either end lands on a copy and we silently jump to the matching real slide: a loop.
+   Two copies (not one) so the slivers peeking in on each side are identical before and after the jump. */
 function tileStrip(p, i) {
   const imgs = [p.cover[0], ...p.images];
   const clone = m => `<a href="#${p.slug}" tabindex="-1" aria-hidden="true" class="clone"><img src="${m.src}" alt="" loading="lazy" decoding="async"></a>`;
   return `<article class="tile" aria-label="${esc(p.name)}">
     <div class="strip-wrap">
-      <div class="strip" tabindex="0" aria-label="${esc(p.name)} images, swipe to browse">${clone(imgs[imgs.length - 1])}${imgs.map((m, k) => `<a href="#${p.slug}" tabindex="${k ? -1 : 0}"><img src="${m.src}" alt="${esc(p.name)}, image ${k + 1} of ${imgs.length}" loading="${i < 2 && k < 2 ? "eager" : "lazy"}" decoding="async"></a>`).join("")}${clone(imgs[0])}</div>
+      <div class="strip" tabindex="0" aria-label="${esc(p.name)} images, swipe to browse">${clone(imgs[imgs.length - 2] || imgs[imgs.length - 1])}${clone(imgs[imgs.length - 1])}${imgs.map((m, k) => `<a href="#${p.slug}" tabindex="${k ? -1 : 0}"><img src="${m.src}" alt="${esc(p.name)}, image ${k + 1} of ${imgs.length}" loading="${i < 2 && k < 2 ? "eager" : "lazy"}" decoding="async"></a>`).join("")}${clone(imgs[0])}${clone(imgs[1] || imgs[0])}</div>
       <span class="count" aria-hidden="true">01 / ${pad(imgs.length)}</span>
       <div class="strip-arrows"><button class="circ" type="button" data-dir="-1" aria-label="Previous ${esc(p.name)} image">←</button><button class="circ" type="button" data-dir="1" aria-label="Next ${esc(p.name)} image">→</button></div>
     </div>
@@ -691,44 +693,59 @@ function tileStrip(p, i) {
 function wireStrips() {
   $$(".tile").forEach(t => {
     const strip = $(".strip", t), count = $(".count", t), bar = $(".progress span", t), slides = strip.children;
-    const total = slides.length - 2;                         // real images (minus the two loop copies)
+    const C = 2;                                             // copies at each end
+    const total = slides.length - 2 * C;                     // real images
     const pos = k => slides[k].offsetLeft - slides[0].offsetLeft;
     const at = () => { const w = pos(1) || strip.clientWidth; return Math.round(strip.scrollLeft / w); };
-    const jump = k => {                                      // instant move with snapping paused, so nothing animates
+    const realOf = k => ((k - C) % total + total) % total;
+    const jump = k => {                                      // instant, invisible move (snap points line up exactly)
       strip.style.scrollSnapType = "none";
       strip.scrollLeft = pos(k);
-      requestAnimationFrame(() => { strip.style.scrollSnapType = ""; });
+      requestAnimationFrame(() => requestAnimationFrame(() => { strip.style.scrollSnapType = ""; }));
     };
+    let shown = -1;
     const show = () => {
-      const real = ((at() - 1) % total + total) % total;
+      const real = realOf(at());
+      if (real === shown) return;
+      const wrapped = shown !== -1 && Math.abs(real - shown) > 1;   // 10 -> 1: no sliding bar back across
+      if (wrapped) bar.style.transition = "none";
       count.textContent = `${pad(real + 1)} / ${pad(total)}`;
       bar.style.width = (100 / total) + "%";
       bar.style.transform = `translateX(${real * 100}%)`;
+      if (wrapped) requestAnimationFrame(() => { bar.style.transition = ""; });
+      shown = real;
     };
-    const settle = () => {                                   // after a swipe stops: on a copy? hop to the real one
+    const settle = () => {                                   // swipe has stopped: on a copy? hop to its real twin
       target = null;
       const k = at();
-      if (k <= 0) jump(total);
-      else if (k >= total + 1) jump(1);
+      if (k < C) jump(k + total);
+      else if (k >= C + total) jump(k - total);
       show();
+    };
+    let warmed = false;
+    const warm = () => {                                     // first touch: load the images either side of the seam
+      if (warmed) return; warmed = true;
+      [0, 1, C, C + 1, total, total + 1, total + C, total + C + 1].forEach(k => { const img = slides[k] && slides[k].querySelector("img"); if (img) img.loading = "eager"; });
     };
     let ticking = false, idle = 0, target = null;
     strip.addEventListener("scroll", () => {
+      warm();
       if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; show(); }); }
-      clearTimeout(idle); idle = setTimeout(settle, 140);    // works everywhere, including older iPhones
+      clearTimeout(idle); idle = setTimeout(settle, 180);
     }, { passive: true });
-    const move = d => {                                      // arrows: finish any pending loop hop, then go to an exact slide
+    strip.addEventListener("pointerenter", warm, { once: true });
+    strip.addEventListener("touchstart", warm, { once: true, passive: true });
+    const move = d => {                                      // arrows: plan from where we're heading, not mid-glide
       clearTimeout(idle);
-      let k = target ?? at();                                // mid-glide? continue from where we're heading
-
-      if (k <= 0) { jump(total); k = total; } else if (k >= total + 1) { jump(1); k = 1; }
+      let k = target ?? at();
+      if (k < C) { jump(k + total); k += total; } else if (k >= C + total) { jump(k - total); k -= total; }
       target = k + d;
       strip.scrollTo({ left: pos(target), behavior: "smooth" });
     };
-    $$(".strip-arrows button", t).forEach(b => b.onclick = () => move(+b.dataset.dir));
+    $$(".strip-arrows button", t).forEach(btn => btn.onclick = () => move(+btn.dataset.dir));
     strip.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); move(e.key === "ArrowRight" ? 1 : -1); } });
-    t._reset = () => { jump(1); show(); };
-    jump(1); show();                                          // start on the first real image
+    t._reset = () => { jump(C + (shown < 0 ? 0 : shown)); show(); };
+    jump(C); show();                                          // start on the first real image
   });
 }
 addEventListener("resize", () => $$(".tile").forEach(t => t._reset && t._reset()));
