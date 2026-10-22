@@ -218,25 +218,19 @@ footer .mono{color:var(--night-muted)}
 .page-head h1{font:500 clamp(64px,13vw,200px)/.86 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.035em}
 .page-head h1 em{font-style:italic;color:var(--brass)}
 .page-head .lede{color:var(--muted);max-width:46ch;margin-top:20px;font-size:clamp(16px,1.3vw,18px)}
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px;border-radius:999px;margin-bottom:clamp(28px,4vw,48px);position:sticky;top:calc(72px + env(safe-area-inset-top,0px));z-index:5;background:color-mix(in srgb,var(--night) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px -12px rgba(0,0,0,.45);overflow:hidden}
+.toolbar{display:flex;width:fit-content;max-width:100%;align-items:center;gap:8px;padding:5px;border-radius:999px;margin-bottom:clamp(28px,4vw,48px);position:sticky;top:calc(72px + env(safe-area-inset-top,0px));z-index:5;background:color-mix(in srgb,var(--night) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px -12px rgba(0,0,0,.45);overflow:hidden}
 /* Inside the bar, buttons look like the bottom menu: muted text, active one is a light pill */
 .toolbar .chips{margin:0;padding:0;gap:2px;border-radius:999px}
 .toolbar .chip{border:0;color:var(--night-muted);min-height:44px;padding:13px 17px}
 .toolbar .chip:hover{color:var(--night-ink)}
 .toolbar .chip[aria-pressed="true"]{background:var(--night-ink);color:var(--night)}
-.toolbar .views{border:0;padding:0;gap:2px}
-.toolbar .views button{color:var(--night-muted);padding:13px 16px;font-size:14px}
-.toolbar .views button[aria-pressed="true"]{background:var(--night-ink);color:var(--night)}
 .chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-4px;padding:4px}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;font:400 14px/1 var(--sans);padding:11px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;cursor:pointer;transition:all .2s;min-height:42px;user-select:none;position:relative}
 .chip:hover{border-color:var(--ink)}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.views{display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:999px;padding:3px}
-.views button{border:0;background:transparent;border-radius:999px;padding:8px 12px;cursor:pointer;font:400 12.5px/1 var(--sans);color:var(--muted)}
-.views button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 @media (max-width:759px){
-  .views{display:none}
+  .toolbar{width:auto}
   /* Phones: the filters share the whole bar in equal parts, so the gaps at both ends match */
   .toolbar .chips{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;overflow:visible}
   .toolbar .chip{padding:13px 6px;text-align:center;white-space:nowrap}
@@ -275,27 +269,6 @@ footer .mono{color:var(--night-muted)}
 }
 
 /* Index view */
-.index{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.index a{display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);text-decoration:none;transition:padding .4s var(--ease)}
-.index .nm{font:400 clamp(30px,5vw,72px)/1 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.015em;transition:font-style .2s}
-.index .meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
-.index .th{width:72px;aspect-ratio:1;overflow:hidden;background:var(--well);grid-row:1/span 2;grid-column:2}
-.index .th img{width:100%;height:100%;object-fit:cover}
-.index .meta-m{grid-column:1;color:var(--muted);font-size:14.5px}
-@media (min-width:760px){
-  .index a{grid-template-columns:4ch 1fr 1fr auto;padding:26px 0}
-  .index .no{display:block}
-  .index .th{display:none}
-  .index .meta-m{grid-column:auto}
-  .index a:hover{padding-left:16px}
-  .index a:hover .nm{font-style:italic}
-}
-.index .no{display:none}
-@media (max-width:759px){.index .meta{display:none}}
-.hover-peek{position:fixed;left:0;top:0;width:min(28vw,380px);aspect-ratio:4/5;pointer-events:none;z-index:25;opacity:0;transform:translate(-50%,-50%) scale(.9);transition:opacity .35s var(--ease),transform .35s var(--ease);overflow:hidden;background:var(--well)}
-.hover-peek.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
-.hover-peek img{width:100%;height:100%;object-fit:cover}
-@media not ((hover:hover) and (pointer:fine)){.hover-peek{display:none}}
 
 /* ---------- Project page ---------- */
 .p-top{padding-block:clamp(20px,4vw,48px) clamp(24px,4vw,48px)}
@@ -395,7 +368,7 @@ label.chip:has(input:focus-visible){outline:1.5px solid var(--brass);outline-off
 .toast.on{opacity:1;transform:translate(-50%,0)}
 
 /* Optical size: low opsz = sturdier hairlines. Display headings get a little more contrast. */
-.mast,.foot-mark,.fig,.p-title,.page-head h1,.next h2,.cta h2,.contact h1,.index .nm{--op:18}
+.mast,.foot-mark,.fig,.p-title,.page-head h1,.next h2,.cta h2,.contact h1{--op:18}
 @media (max-width:759px){
   html,body{overflow-x:hidden;overscroll-behavior-x:none}
   @supports (overflow:clip){html,body{overflow-x:clip}}
@@ -447,7 +420,6 @@ label.chip:has(input:focus-visible){outline:1.5px solid var(--brass);outline-off
   <a href="#contact" data-nav="contact">Contact</a>
 </nav>
 
-<div class="hover-peek" id="peek" aria-hidden="true"><img alt=""></div>
 
 <dialog class="lb" id="lb" aria-label="Image viewer">
   <div class="lb-track" id="lb-track"></div>
@@ -672,8 +644,7 @@ function viewHome() {
   </div>`;
 }
 
-let filter = "all", mode = "grid";
-try { mode = localStorage.getItem("icaView") || "grid"; } catch (e) {}
+let filter = "all";
 function viewWork() {
   const F = [["all", "All work"], ["identity", "Identity"], ["digital", "Digital"], ["print", "Print"]];
   return `<div class="view">
@@ -681,7 +652,6 @@ function viewWork() {
   <div class="wrap">
     <div class="toolbar">
       <div class="chips" role="group" aria-label="Filter by discipline">${F.map(([k, l]) => `<button class="chip" type="button" data-f="${k}" aria-pressed="${k === filter}">${l}</button>`).join("")}</div>
-      <div class="views" role="group" aria-label="Layout"><button type="button" data-v="grid" aria-pressed="${mode === "grid"}">Grid</button><button type="button" data-v="index" aria-pressed="${mode === "index"}">Index</button></div>
     </div>
     <div id="work-list" aria-live="polite"></div>
   </div></div>`;
@@ -763,18 +733,11 @@ function wireStrips() {
   });
 }
 addEventListener("resize", () => $$(".tile").forEach(t => t._reset && t._reset()));
-const phone = matchMedia("(max-width:759px)");
 function renderWork() {
-  const layout = phone.matches ? "grid" : mode;
   const list = PROJECTS.filter(p => filter === "all" || p.tags.includes(filter));
-  const host = $("#work-list");
-  host.innerHTML = layout === "grid"
-    ? `<div class="tiles">${list.map((p, i) => tileStrip(p, i)).join("")}</div>`
-    : `<ul class="index">${list.map(p => `<li><a href="#${p.slug}" data-peek="${p.cover[0].src}"><span class="no mono">${pad(PROJECTS.indexOf(p) + 1)}</span><span class="nm">${esc(p.name)}</span><span class="meta-m">${esc(p.sector)}</span><span class="meta mono">${esc(p.scope)}</span><span class="th"><img src="${p.cover[0].src}" alt="" loading="lazy"></span></a></li>`).join("")}</ul>`;
+  $("#work-list").innerHTML = `<div class="tiles">${list.map((p, i) => tileStrip(p, i)).join("")}</div>`;
   $$("[data-f]").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filter));
-  $$("[data-v]").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === mode));
-  wirePeek();
-  if ($(".tiles")) wireStrips();
+  wireStrips();
 }
 
 function viewProject(p) {
@@ -886,7 +849,6 @@ function route() {
   toTop();
   requestAnimationFrame(toTop);                      // once more after the new page has laid out
   if (typeof setDock === "function") { travel = 0; lastY = 0; setDock(false); }
-  peekOff();
   if (key === "work") { wireWork(); }
   if (proj) wireGallery(proj);
   if (key === "contact") wireForm();
@@ -923,24 +885,10 @@ function wireReel() {
   update();
 }
 
-/* ---------- Work: filters, layout toggle, cursor preview ---------- */
+/* ---------- Work: filters ---------- */
 function wireWork() {
   $$("[data-f]").forEach(b => b.onclick = () => { filter = b.dataset.f; renderWork(); });
-  $$("[data-v]").forEach(b => b.onclick = () => { mode = b.dataset.v; try { localStorage.setItem("icaView", mode); } catch (e) {} renderWork(); });
   renderWork();
-}
-phone.addEventListener("change", () => { if ($("#work-list")) renderWork(); });
-const peek = $("#peek"), peekImg = $("#peek img");
-let px = 0, py = 0, tx = 0, ty = 0, raf = 0;
-function peekLoop() { px += (tx - px) * .18; py += (ty - py) * .18; peek.style.left = px + "px"; peek.style.top = py + "px"; raf = requestAnimationFrame(peekLoop); }
-function peekOff() { peek.classList.remove("on"); cancelAnimationFrame(raf); raf = 0; }
-function wirePeek() {
-  if (!matchMedia("(hover:hover) and (pointer:fine)").matches) return;
-  $$("[data-peek]").forEach(a => {
-    a.addEventListener("mouseenter", e => { peekImg.src = a.dataset.peek; tx = px = e.clientX; ty = py = e.clientY; peek.classList.add("on"); if (!raf) peekLoop(); });
-    a.addEventListener("mousemove", e => { tx = e.clientX; ty = e.clientY; });
-    a.addEventListener("mouseleave", peekOff);
-  });
 }
 
 /* ---------- Lightbox: native swipe via scroll-snap ---------- */
