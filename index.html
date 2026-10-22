@@ -77,8 +77,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media (min-width:760px){.desk-nav{display:flex}.top-time{display:none}}
 
 /* ---------- Mobile dock (thumb reach) ---------- */
-.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:35;display:flex;gap:2px;padding:5px;border-radius:999px;background:color-mix(in srgb,var(--night) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px -10px rgba(0,0,0,.45);transition:transform .45s var(--ease),opacity .3s}
-.dock.away{transform:translate(-50%,calc(100% + 30px));opacity:0}
+/* Moves only on the GPU (transform), no live blur behind it: smooth on iPhone */
+.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate3d(-50%,0,0);will-change:transform;backface-visibility:hidden;z-index:35;display:flex;gap:2px;padding:5px;border-radius:999px;background:color-mix(in srgb,var(--night) 96%,transparent);box-shadow:0 10px 30px -10px rgba(0,0,0,.45);transition:transform .5s var(--ease)}
+.dock.away{transform:translate3d(-50%,calc(100% + 40px),0)}
 .dock a{font:400 14px/1 var(--sans);color:var(--night-muted);text-decoration:none;padding:13px 17px;border-radius:999px;transition:color .25s,background .25s;white-space:nowrap}
 .dock a[aria-current="page"]{color:var(--night);background:var(--night-ink)}
 @media (min-width:760px){.dock{display:none}}
@@ -211,7 +212,15 @@ footer .mono{color:var(--night-muted)}
 .page-head h1{font:500 clamp(64px,13vw,200px)/.86 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.035em}
 .page-head h1 em{font-style:italic;color:var(--brass)}
 .page-head .lede{color:var(--muted);max-width:46ch;margin-top:20px;font-size:clamp(16px,1.3vw,18px)}
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:14px;border-block:1px solid var(--line);margin-bottom:clamp(28px,4vw,48px);position:sticky;top:calc(64px + env(safe-area-inset-top,0px));background:var(--paper);z-index:5}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px;border-radius:999px;margin-bottom:clamp(28px,4vw,48px);position:sticky;top:calc(72px + env(safe-area-inset-top,0px));z-index:5;background:color-mix(in srgb,var(--night) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px -12px rgba(0,0,0,.45);overflow:hidden}
+/* Inside the bar, buttons look like the bottom menu: muted text, active one is a light pill */
+.toolbar .chips{margin:0;padding:0;gap:2px;border-radius:999px}
+.toolbar .chip{border:0;color:var(--night-muted);min-height:44px;padding:13px 17px}
+.toolbar .chip:hover{color:var(--night-ink)}
+.toolbar .chip[aria-pressed="true"]{background:var(--night-ink);color:var(--night)}
+.toolbar .views{border:0;padding:0;gap:2px}
+.toolbar .views button{color:var(--night-muted);padding:13px 16px;font-size:14px}
+.toolbar .views button[aria-pressed="true"]{background:var(--night-ink);color:var(--night)}
 .chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-4px;padding:4px}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;font:400 14px/1 var(--sans);padding:11px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;cursor:pointer;transition:all .2s;min-height:42px;user-select:none;position:relative}
@@ -220,6 +229,7 @@ footer .mono{color:var(--night-muted)}
 .views{display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:999px;padding:3px}
 .views button{border:0;background:transparent;border-radius:999px;padding:8px 12px;cursor:pointer;font:400 12.5px/1 var(--sans);color:var(--muted)}
 .views button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+@media (max-width:759px){.views{display:none}}
 
 .tiles{display:grid;gap:clamp(48px,6vw,96px) 28px}
 .tile{text-decoration:none;display:flex;flex-direction:column;gap:16px;min-width:0}
@@ -643,10 +653,12 @@ function viewWork() {
     <div id="work-list" aria-live="polite"></div>
   </div></div>`;
 }
+const phone = matchMedia("(max-width:759px)");
 function renderWork() {
+  const layout = phone.matches ? "grid" : mode;
   const list = PROJECTS.filter(p => filter === "all" || p.tags.includes(filter));
   const host = $("#work-list");
-  host.innerHTML = mode === "grid"
+  host.innerHTML = layout === "grid"
     ? `<div class="tiles">${list.map((p, i) => `<a class="tile" href="#${p.slug}">${frame(p, i < 2)}<div class="cap"><h3>${esc(p.name)}</h3><span class="mono">${pad(PROJECTS.indexOf(p) + 1)}</span></div><div class="sub"><span>${esc(p.sector)}</span><span aria-hidden="true">·</span><span>${esc(p.scope)}</span></div></a>`).join("")}</div>`
     : `<ul class="index">${list.map(p => `<li><a href="#${p.slug}" data-peek="${p.cover[0].src}"><span class="no mono">${pad(PROJECTS.indexOf(p) + 1)}</span><span class="nm">${esc(p.name)}</span><span class="meta-m">${esc(p.sector)}</span><span class="meta mono">${esc(p.scope)}</span><span class="th"><img src="${p.cover[0].src}" alt="" loading="lazy"></span></a></li>`).join("")}</ul>`;
   $$("[data-f]").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filter));
@@ -753,6 +765,7 @@ function route() {
   document.title = title;
   $$("[data-nav]").forEach(a => a.dataset.nav === nav ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
   window.scrollTo(0, 0);
+  if (typeof setDock === "function") { travel = 0; lastY = 0; setDock(false); }
   peekOff();
   if (key === "work") { wireWork(); }
   if (proj) wireGallery(proj);
@@ -790,6 +803,7 @@ function wireWork() {
   $$("[data-v]").forEach(b => b.onclick = () => { mode = b.dataset.v; try { localStorage.setItem("icaView", mode); } catch (e) {} renderWork(); });
   renderWork();
 }
+phone.addEventListener("change", () => { if ($("#work-list")) renderWork(); });
 const peek = $("#peek"), peekImg = $("#peek img");
 let px = 0, py = 0, tx = 0, ty = 0, raf = 0;
 function peekLoop() { px += (tx - px) * .18; py += (ty - py) * .18; peek.style.left = px + "px"; peek.style.top = py + "px"; raf = requestAnimationFrame(peekLoop); }
@@ -856,15 +870,25 @@ document.addEventListener("click", async e => {
   toast.classList.add("on"); setTimeout(() => toast.classList.remove("on"), 1800);
 });
 const headEl = $("#top"), dock = $("#dock");
-let lastY = 0;
-addEventListener("scroll", () => {
-  const y = scrollY;
-  headEl.classList.toggle("scrolled", y > 8);
-  const nearEnd = innerHeight + y > document.body.scrollHeight - 40;
-  dock.classList.toggle("away", y > lastY + 6 && y > 240 && !nearEnd);
-  if (y < lastY - 6 || nearEnd) dock.classList.remove("away");
-  lastY = y;
-}, { passive: true });
+/* Hide the dock only after a deliberate scroll down (48px), show after 24px up.
+   Bounce at the top/bottom and tiny momentum jitters are ignored, and we only
+   touch the page when the state actually changes (once per frame at most). */
+let lastY = Math.max(0, scrollY), travel = 0, dockHidden = false, scrolled = false, ticking = false;
+function setDock(hide) { if (hide !== dockHidden) { dockHidden = hide; dock.classList.toggle("away", hide); } }
+function onScrollFrame() {
+  ticking = false;
+  const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  const y = Math.min(Math.max(scrollY, 0), max);          // clamp away the rubber-band bounce
+  const dy = y - lastY; lastY = y;
+  const s = y > 8; if (s !== scrolled) { scrolled = s; headEl.classList.toggle("scrolled", s); }
+  if (!dy) return;
+  if ((dy > 0) !== (travel > 0)) travel = 0;               // direction changed: start counting again
+  travel += dy;
+  if (y < 120 || y > max - 80) setDock(false);             // always visible near the top and bottom
+  else if (travel > 48) setDock(true);
+  else if (travel < -24) setDock(false);
+}
+addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScrollFrame); } }, { passive: true });
 const fmt = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver", hour: "2-digit", minute: "2-digit", hour12: false });
 const tick = () => $$(".clock").forEach(c => c.textContent = fmt.format(new Date()));
 tick(); setInterval(tick, 15000);
