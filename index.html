@@ -78,9 +78,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* ---------- Mobile dock (thumb reach) ---------- */
 /* Moves only on the GPU (transform), no live blur behind it: smooth on iPhone */
-.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate3d(-50%,0,0);will-change:transform;backface-visibility:hidden;z-index:35;display:flex;gap:2px;padding:5px;border-radius:999px;background:color-mix(in srgb,var(--night) 96%,transparent);box-shadow:0 10px 30px -10px rgba(0,0,0,.45);transition:transform .5s var(--ease),opacity .35s var(--ease)}
-/* Hidden: slide past its own height + its gap + the iPhone home-bar area, and fade so the shadow can't peek */
-.dock.away{transform:translate3d(-50%,calc(100% + 14px + env(safe-area-inset-bottom,0px) + 48px),0);opacity:0;pointer-events:none}
+.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate3d(-50%,0,0);will-change:transform;backface-visibility:hidden;z-index:35;display:flex;gap:2px;padding:5px;border-radius:999px;background:color-mix(in srgb,var(--night) 96%,transparent);box-shadow:0 10px 30px -10px rgba(0,0,0,.45);transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .25s ease-out}   /* showing: quick and responsive */
+/* Hidden: slide past its own height + its gap + the iPhone home-bar area.
+   Hiding gets its own, slower motion: a smooth ease-in-out glide, with the fade held back
+   until the last part of the trip so you see it slide away rather than blink out. */
+.dock.away{transform:translate3d(-50%,calc(100% + 14px + env(safe-area-inset-bottom,0px) + 48px),0);opacity:0;pointer-events:none;
+  transition:transform .6s cubic-bezier(.45,0,.25,1),opacity .3s ease-in .3s}
 .dock a{font:400 14px/1 var(--sans);color:var(--night-muted);text-decoration:none;padding:13px 17px;border-radius:999px;transition:color .25s,background .25s;white-space:nowrap}
 .dock a[aria-current="page"]{color:var(--night);background:var(--night-ink)}
 @media (min-width:760px){.dock{display:none}}
