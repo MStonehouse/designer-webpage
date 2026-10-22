@@ -125,7 +125,7 @@ a:hover .arr,button:hover .arr{transform:translateX(4px)}
 
 /* ---------- Reel (swipe on phones) ---------- */
 .reel-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
-.reel{display:grid;grid-auto-flow:column;grid-auto-columns:84%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--gl);padding-inline:var(--gl) var(--gr);-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+.reel{display:grid;grid-auto-flow:column;grid-auto-columns:84%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--gl);padding-inline:var(--gl) var(--gr);padding-bottom:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
 .reel::-webkit-scrollbar{display:none}
 .reel .slide{scroll-snap-align:start;text-decoration:none;display:flex;flex-direction:column;gap:14px;min-width:0}
 .frame{position:relative;overflow:hidden;background:var(--well);aspect-ratio:4/5;border-radius:2px}
@@ -208,7 +208,8 @@ footer .mono{color:var(--night-muted)}
 .foot-cols a{text-decoration:none;font-size:15.5px;color:var(--night-ink);padding:2px 0}
 .foot-cols a:hover{color:var(--brass-night)}
 @media (min-width:900px){.foot{grid-template-columns:1.4fr 1fr}.foot-cols{grid-template-columns:repeat(3,1fr)}}
-.foot-mark{font:600 clamp(104px,30vw,440px)/.78 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.05em;margin:clamp(56px,8vw,110px) 0 0 -.04em;white-space:nowrap;overflow:hidden;color:var(--night-ink);user-select:none}
+.foot-mark{font:600 clamp(104px,30vw,440px)/.78 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.05em;margin:clamp(40px,6vw,86px) 0 0 -.04em;padding-block:.16em .05em;white-space:nowrap;overflow:hidden;color:var(--night-ink);user-select:none}
+/* the padding gives the tall & and C room inside the cropped box; side cropping still stops sideways scroll */
 .foot-mark .amp{color:var(--brass-night)}
 .foot-base{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:18px;margin-top:22px;border-top:1px solid var(--night-line)}
 
