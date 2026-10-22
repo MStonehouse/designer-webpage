@@ -99,7 +99,7 @@ main:focus{outline:none}
 
 /* ---------- Home hero ---------- */
 .hero{padding-block:clamp(28px,6vw,72px) clamp(28px,4vw,48px)}
-.mast{font:600 clamp(104px,39vw,380px)/.8 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.045em;margin-left:-.04em;display:flex;align-items:baseline;white-space:nowrap}
+.mast{font:600 clamp(96px,35vw,380px)/.8 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.045em;margin-left:-.04em;display:flex;align-items:baseline;white-space:nowrap}
 .mast .amp{font-size:1.02em;margin:0 -.015em 0 .005em;letter-spacing:0;display:inline-block;animation:amp 1.4s .15s var(--ease) both;transform-origin:50% 70%}
 .mast .l{display:inline-block;animation:rise 1s var(--ease) both}
 .mast .l:last-child{animation-delay:.12s}
@@ -109,8 +109,9 @@ main:focus{outline:none}
 .hero-grid h1{font:400 clamp(30px,4.6vw,64px)/1.08 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.01em}
 .hero-grid h1 em{font-style:italic}
 .hero-grid .lede{color:var(--muted);max-width:44ch;font-size:clamp(16px,1.3vw,18px)}
-.hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;font:400 15px/1 var(--sans);text-decoration:none;padding:17px 26px;min-height:52px;border-radius:999px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);cursor:pointer;transition:transform .25s var(--ease),background .25s,color .25s}
+.hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.hero-actions .ghost{min-height:58px;padding:12px 24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;font:400 15px/1 var(--sans);text-decoration:none;padding:19px 32px;min-height:58px;border-radius:999px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);cursor:pointer;transition:transform .25s var(--ease),background .25s,color .25s}
 .btn:hover{background:transparent;color:var(--ink)}
 .btn:active{transform:scale(.98)}
 .btn.light{background:var(--night-ink);color:var(--night);border-color:var(--night-ink)}
@@ -394,6 +395,10 @@ label.chip:has(input:focus-visible){outline:1.5px solid var(--brass);outline-off
 
 /* Optical size: low opsz = sturdier hairlines. Display headings get a little more contrast. */
 .mast,.foot-mark,.fig,.p-title,.page-head h1,.next h2,.cta h2,.contact h1,.index .nm{--op:18}
+@media (max-width:759px){
+  html,body{overflow-x:hidden;overscroll-behavior-x:none}
+  @supports (overflow:clip){html,body{overflow-x:clip}}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
