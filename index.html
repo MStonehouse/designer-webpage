@@ -44,7 +44,7 @@
   --brass:#c6a26a;--brass-night:#c6a26a;color-scheme:dark}
 
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;overflow-anchor:none}
 body{margin:0;background:var(--paper);color:var(--ink);font:300 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:var(--dock-h)}
 img{max-width:100%;display:block}
 a{color:inherit;-webkit-tap-highlight-color:transparent}
@@ -671,12 +671,15 @@ function viewWork() {
     <div id="work-list" aria-live="polite"></div>
   </div></div>`;
 }
-/* One swipeable strip per client: key visual first, then the project images */
+/* One swipeable strip per client: key visual first, then the project images.
+   A copy of the last image sits before the first and a copy of the first after the last,
+   so swiping past either end lands on a copy and we silently jump to the real slide: a loop. */
 function tileStrip(p, i) {
   const imgs = [p.cover[0], ...p.images];
+  const clone = m => `<a href="#${p.slug}" tabindex="-1" aria-hidden="true" class="clone"><img src="${m.src}" alt="" loading="lazy" decoding="async"></a>`;
   return `<article class="tile" aria-label="${esc(p.name)}">
     <div class="strip-wrap">
-      <div class="strip" tabindex="0" aria-label="${esc(p.name)} images, swipe to browse">${imgs.map((m, k) => `<a href="#${p.slug}" tabindex="${k ? -1 : 0}"><img src="${m.src}" alt="${esc(p.name)}, image ${k + 1} of ${imgs.length}" loading="${i < 2 && k < 2 ? "eager" : "lazy"}" decoding="async"></a>`).join("")}</div>
+      <div class="strip" tabindex="0" aria-label="${esc(p.name)} images, swipe to browse">${clone(imgs[imgs.length - 1])}${imgs.map((m, k) => `<a href="#${p.slug}" tabindex="${k ? -1 : 0}"><img src="${m.src}" alt="${esc(p.name)}, image ${k + 1} of ${imgs.length}" loading="${i < 2 && k < 2 ? "eager" : "lazy"}" decoding="async"></a>`).join("")}${clone(imgs[0])}</div>
       <span class="count" aria-hidden="true">01 / ${pad(imgs.length)}</span>
       <div class="strip-arrows"><button class="circ" type="button" data-dir="-1" aria-label="Previous ${esc(p.name)} image">←</button><button class="circ" type="button" data-dir="1" aria-label="Next ${esc(p.name)} image">→</button></div>
     </div>
@@ -688,22 +691,47 @@ function tileStrip(p, i) {
 function wireStrips() {
   $$(".tile").forEach(t => {
     const strip = $(".strip", t), count = $(".count", t), bar = $(".progress span", t), slides = strip.children;
-    const total = slides.length;
-    const step = () => (slides[1] ? slides[1].offsetLeft - slides[0].offsetLeft : strip.clientWidth);
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      const i = Math.min(total - 1, Math.round(strip.scrollLeft / step()));
-      count.textContent = `${pad(i + 1)} / ${pad(total)}`;
-      bar.style.width = (100 / total) + "%";
-      bar.style.transform = `translateX(${i * 100}%)`;
+    const total = slides.length - 2;                         // real images (minus the two loop copies)
+    const pos = k => slides[k].offsetLeft - slides[0].offsetLeft;
+    const at = () => { const w = pos(1) || strip.clientWidth; return Math.round(strip.scrollLeft / w); };
+    const jump = k => {                                      // instant move with snapping paused, so nothing animates
+      strip.style.scrollSnapType = "none";
+      strip.scrollLeft = pos(k);
+      requestAnimationFrame(() => { strip.style.scrollSnapType = ""; });
     };
-    strip.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-    $$(".strip-arrows button", t).forEach(b => b.onclick = () => strip.scrollBy({ left: +b.dataset.dir * step(), behavior: "smooth" }));
-    strip.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); strip.scrollBy({ left: (e.key === "ArrowRight" ? 1 : -1) * step(), behavior: "smooth" }); } });
-    update();
+    const show = () => {
+      const real = ((at() - 1) % total + total) % total;
+      count.textContent = `${pad(real + 1)} / ${pad(total)}`;
+      bar.style.width = (100 / total) + "%";
+      bar.style.transform = `translateX(${real * 100}%)`;
+    };
+    const settle = () => {                                   // after a swipe stops: on a copy? hop to the real one
+      target = null;
+      const k = at();
+      if (k <= 0) jump(total);
+      else if (k >= total + 1) jump(1);
+      show();
+    };
+    let ticking = false, idle = 0, target = null;
+    strip.addEventListener("scroll", () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; show(); }); }
+      clearTimeout(idle); idle = setTimeout(settle, 140);    // works everywhere, including older iPhones
+    }, { passive: true });
+    const move = d => {                                      // arrows: finish any pending loop hop, then go to an exact slide
+      clearTimeout(idle);
+      let k = target ?? at();                                // mid-glide? continue from where we're heading
+
+      if (k <= 0) { jump(total); k = total; } else if (k >= total + 1) { jump(1); k = 1; }
+      target = k + d;
+      strip.scrollTo({ left: pos(target), behavior: "smooth" });
+    };
+    $$(".strip-arrows button", t).forEach(b => b.onclick = () => move(+b.dataset.dir));
+    strip.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); move(e.key === "ArrowRight" ? 1 : -1); } });
+    t._reset = () => { jump(1); show(); };
+    jump(1); show();                                          // start on the first real image
   });
 }
+addEventListener("resize", () => $$(".tile").forEach(t => t._reset && t._reset()));
 const phone = matchMedia("(max-width:759px)");
 function renderWork() {
   const layout = phone.matches ? "grid" : mode;
@@ -803,6 +831,14 @@ function viewContact() {
 }
 
 /* ---------- Router ---------- */
+/* We decide where the page sits, not the browser: no restoring old scroll positions on back/forward. */
+try { history.scrollRestoration = "manual"; } catch (e) {}
+function toTop() {
+  const html = document.documentElement, prev = html.style.scrollBehavior;
+  html.style.scrollBehavior = "auto";
+  window.scrollTo(0, 0); html.scrollTop = 0; document.body.scrollTop = 0;
+  html.style.scrollBehavior = prev;
+}
 const main = $("#main");
 function route() {
   const key = (location.hash || "#home").slice(1).toLowerCase();
@@ -816,7 +852,8 @@ function route() {
   main.innerHTML = html;
   document.title = title;
   $$("[data-nav]").forEach(a => a.dataset.nav === nav ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
-  window.scrollTo(0, 0);
+  toTop();
+  requestAnimationFrame(toTop);                      // once more after the new page has laid out
   if (typeof setDock === "function") { travel = 0; lastY = 0; setDock(false); }
   peekOff();
   if (key === "work") { wireWork(); }
@@ -825,6 +862,12 @@ function route() {
   if (!proj && !["work", "about", "contact"].includes(key)) wireReel();
 }
 addEventListener("hashchange", () => { route(); main.focus({ preventScroll: true }); });
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || a.closest(".strip")) return;
+  const want = a.getAttribute("href") || "#home", now = location.hash || "#home";
+  if (want === now) { e.preventDefault(); window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+});
 
 /* ---------- Reel: swipe carousel with counter and progress ---------- */
 function wireReel() {
