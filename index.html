@@ -231,18 +231,36 @@ footer .mono{color:var(--night-muted)}
 .views button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 @media (max-width:759px){.views{display:none}}
 
-.tiles{display:grid;gap:clamp(48px,6vw,96px) 28px}
-.tile{text-decoration:none;display:flex;flex-direction:column;gap:16px;min-width:0}
-.tile .frame{aspect-ratio:4/5}
-@media (max-width:759px){.tile .frame{margin-left:calc(var(--gl) * -1);margin-right:calc(var(--gr) * -1);border-radius:0}}
-.tile .cap h3{font-size:clamp(30px,3.2vw,46px)}
-.tile .sub{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:15px}
+.tiles{display:grid;gap:clamp(56px,7vw,104px) 28px}
+.tile{display:flex;flex-direction:column;gap:14px;min-width:0}
+/* Each client is a swipe strip of its own images */
+.strip-wrap{position:relative}
+.strip{display:grid;grid-auto-flow:column;grid-auto-columns:100%;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.strip::-webkit-scrollbar{display:none}
+.strip a{scroll-snap-align:start;display:block;aspect-ratio:4/3;background:var(--well);overflow:hidden}
+.strip img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+@media (hover:hover) and (pointer:fine){.strip a:hover img{transform:scale(1.02)}}
+.count{position:absolute;top:12px;right:12px;pointer-events:none;font:400 11px/1 var(--mono);letter-spacing:.06em;color:var(--night-ink);background:color-mix(in srgb,var(--night) 82%,transparent);padding:7px 10px;border-radius:999px;font-variant-numeric:tabular-nums}
+.strip-arrows{position:absolute;bottom:14px;right:14px;display:flex;gap:6px;opacity:0;transition:opacity .3s}
+.strip-arrows .circ{background:var(--paper);border-color:var(--paper)}
+.strip-arrows .circ:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tile:hover .strip-arrows,.strip-arrows:focus-within{opacity:1}
+@media not ((hover:hover) and (pointer:fine)){.strip-arrows{display:none}}
+.tile .progress{margin-top:0}
+.tile-cap{display:flex;justify-content:space-between;align-items:baseline;gap:16px;text-decoration:none}
+.tile-cap h3{font:400 clamp(30px,3.2vw,46px)/1.05 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" 16}
+.tile-cap .go{white-space:nowrap;font-size:14.5px;color:var(--muted);display:inline-flex;gap:8px;align-items:center}
+.tile-cap:hover .go{color:var(--ink)}
+.tile .sub{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:15px;margin-top:-6px}
+@media (max-width:759px){
+  .strip-wrap{margin-left:calc(var(--gl) * -1);margin-right:calc(var(--gr) * -1)}
+  .strip{grid-auto-columns:86%;scroll-padding-inline:var(--gl);padding-inline:var(--gl) var(--gr)}
+  .count{right:calc(var(--gr) + 10px)}
+}
 @media (min-width:760px){
   .tiles{grid-template-columns:1fr 1fr}
-  .tiles .tile:nth-child(even){margin-top:clamp(60px,12vw,200px)}
-  .tiles .tile:nth-child(3n+1) .frame{aspect-ratio:4/5}
-  .tiles .tile:nth-child(3n+2) .frame{aspect-ratio:1/1}
-  .tiles .tile:nth-child(3n) .frame{aspect-ratio:5/6}
+  .tiles .tile:nth-child(even){margin-top:clamp(60px,10vw,160px)}
+}
 }
 
 /* Index view */
@@ -653,17 +671,51 @@ function viewWork() {
     <div id="work-list" aria-live="polite"></div>
   </div></div>`;
 }
+/* One swipeable strip per client: key visual first, then the project images */
+function tileStrip(p, i) {
+  const imgs = [p.cover[0], ...p.images];
+  return `<article class="tile" aria-label="${esc(p.name)}">
+    <div class="strip-wrap">
+      <div class="strip" tabindex="0" aria-label="${esc(p.name)} images, swipe to browse">${imgs.map((m, k) => `<a href="#${p.slug}" tabindex="${k ? -1 : 0}"><img src="${m.src}" alt="${esc(p.name)}, image ${k + 1} of ${imgs.length}" loading="${i < 2 && k < 2 ? "eager" : "lazy"}" decoding="async"></a>`).join("")}</div>
+      <span class="count" aria-hidden="true">01 / ${pad(imgs.length)}</span>
+      <div class="strip-arrows"><button class="circ" type="button" data-dir="-1" aria-label="Previous ${esc(p.name)} image">←</button><button class="circ" type="button" data-dir="1" aria-label="Next ${esc(p.name)} image">→</button></div>
+    </div>
+    <div class="progress" aria-hidden="true"><span></span></div>
+    <a class="tile-cap" href="#${p.slug}"><h3>${esc(p.name)}</h3><span class="go">View project ${AR}</span></a>
+    <div class="sub"><span>${esc(p.sector)}</span><span aria-hidden="true">·</span><span>${esc(p.scope)}</span></div>
+  </article>`;
+}
+function wireStrips() {
+  $$(".tile").forEach(t => {
+    const strip = $(".strip", t), count = $(".count", t), bar = $(".progress span", t), slides = strip.children;
+    const total = slides.length;
+    const step = () => (slides[1] ? slides[1].offsetLeft - slides[0].offsetLeft : strip.clientWidth);
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const i = Math.min(total - 1, Math.round(strip.scrollLeft / step()));
+      count.textContent = `${pad(i + 1)} / ${pad(total)}`;
+      bar.style.width = (100 / total) + "%";
+      bar.style.transform = `translateX(${i * 100}%)`;
+    };
+    strip.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    $$(".strip-arrows button", t).forEach(b => b.onclick = () => strip.scrollBy({ left: +b.dataset.dir * step(), behavior: "smooth" }));
+    strip.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); strip.scrollBy({ left: (e.key === "ArrowRight" ? 1 : -1) * step(), behavior: "smooth" }); } });
+    update();
+  });
+}
 const phone = matchMedia("(max-width:759px)");
 function renderWork() {
   const layout = phone.matches ? "grid" : mode;
   const list = PROJECTS.filter(p => filter === "all" || p.tags.includes(filter));
   const host = $("#work-list");
   host.innerHTML = layout === "grid"
-    ? `<div class="tiles">${list.map((p, i) => `<a class="tile" href="#${p.slug}">${frame(p, i < 2)}<div class="cap"><h3>${esc(p.name)}</h3><span class="mono">${pad(PROJECTS.indexOf(p) + 1)}</span></div><div class="sub"><span>${esc(p.sector)}</span><span aria-hidden="true">·</span><span>${esc(p.scope)}</span></div></a>`).join("")}</div>`
+    ? `<div class="tiles">${list.map((p, i) => tileStrip(p, i)).join("")}</div>`
     : `<ul class="index">${list.map(p => `<li><a href="#${p.slug}" data-peek="${p.cover[0].src}"><span class="no mono">${pad(PROJECTS.indexOf(p) + 1)}</span><span class="nm">${esc(p.name)}</span><span class="meta-m">${esc(p.sector)}</span><span class="meta mono">${esc(p.scope)}</span><span class="th"><img src="${p.cover[0].src}" alt="" loading="lazy"></span></a></li>`).join("")}</ul>`;
   $$("[data-f]").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filter));
   $$("[data-v]").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === mode));
   wirePeek();
+  if ($(".tiles")) wireStrips();
 }
 
 function viewProject(p) {
