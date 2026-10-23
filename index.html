@@ -142,6 +142,14 @@ a:hover .arr,button:hover .arr{transform:translateX(4px)}
 .circ:disabled{opacity:.35;pointer-events:none}
 @media (min-width:760px){.reel{grid-auto-columns:42%;gap:20px}}
 @media (min-width:1200px){.reel{grid-auto-columns:31%}}
+/* Whole-pixel card widths: browsers scroll in whole pixels, so every loop jump lands exactly */
+@supports (width:round(down,10.5px,1px)){
+  .reel{grid-auto-columns:round(down,84%,1px)}
+  .strip{grid-auto-columns:round(down,100%,1px)}
+  @media (min-width:760px){.reel{grid-auto-columns:round(down,42%,1px)}}
+  @media (min-width:1200px){.reel{grid-auto-columns:round(down,31%,1px)}}
+  @media (max-width:759px){.strip{grid-auto-columns:round(down,86%,1px)}}
+}
 @media (max-width:759px){.reel-ctrl{display:none}}
 
 /* ---------- Sections ---------- */
@@ -599,7 +607,7 @@ function viewHome() {
   <section aria-labelledby="sel" style="padding-top:clamp(24px,4vw,56px)">
     <div class="wrap reel-head"><span class="mono" id="sel">Selected work · <span id="reel-n">01</span> / ${pad(PROJECTS.length)}</span>
       <div class="reel-ctrl"><button class="circ" id="rp" type="button" aria-label="Previous project">←</button><button class="circ" id="rn" type="button" aria-label="Next project">→</button></div></div>
-    <div class="reel" id="reel">${PROJECTS.map((p, i) => `<a class="slide" href="#${p.slug}">${frame(p, i < 2)}<div class="cap"><h3>${esc(p.name)}</h3><span class="mono">${esc(p.sector)}</span></div></a>`).join("")}</div>
+    <div class="reel" id="reel" tabindex="0" aria-label="Selected projects, swipe to browse">${withCopies(PROJECTS, REEL_COPIES).map(({ item: p, copy }, i) => `<a class="slide${copy ? " clone" : ""}" href="#${p.slug}"${copy ? ' tabindex="-1" aria-hidden="true"' : ""}>${frame(p, !copy && i < REEL_COPIES + 2)}<div class="cap"><h3>${esc(p.name)}</h3><span class="mono">${esc(p.sector)}</span></div></a>`).join("")}</div>
     <div class="wrap"><div class="progress" aria-hidden="true"><span id="reel-bar"></span></div></div>
   </section>
 
@@ -674,65 +682,84 @@ function tileStrip(p, i) {
     <div class="sub"><span>${esc(p.sector)}</span><span aria-hidden="true">·</span><span>${esc(p.scope)}</span></div>
   </article>`;
 }
+/* ---------- Infinite loop engine (shared) ----------
+   The row holds C copies of the last items, then the real items, then C copies of the first items.
+   When a swipe stops on a copy, we jump instantly to its real twin, which looks identical,
+   so the row seems endless. C must cover everything visible at once, so the seam always matches. */
+const REEL_COPIES = 4;
+function withCopies(items, C) {
+  const n = items.length, at = k => items[((k % n) + n) % n];
+  return [...Array(C)].map((_, k) => ({ item: at(k - C), copy: true }))
+    .concat(items.map(item => ({ item, copy: false })))
+    .concat([...Array(C)].map((_, k) => ({ item: at(k), copy: true })));
+}
+function makeLoop(row, C, onShow) {
+  const slides = row.children, total = slides.length - 2 * C;
+  const pos = k => slides[k].offsetLeft - slides[0].offsetLeft;
+  const at = () => Math.round(row.scrollLeft / (pos(1) || row.clientWidth));
+  const realOf = k => ((k - C) % total + total) % total;
+  const freeze = fn => {                                     // move instantly with snapping paused
+    row.style.scrollSnapType = "none"; fn();
+    requestAnimationFrame(() => requestAnimationFrame(() => { row.style.scrollSnapType = ""; }));
+  };
+  const jump = k => freeze(() => { row.scrollLeft = pos(k); });
+  // Hop from a copy to its real twin by their exact on-screen distance (fractions of a pixel included),
+  // so what's on screen lands in exactly the same place: no half-pixel shimmer at the seam.
+  const hop = (from, to) => freeze(() => { row.scrollLeft += slides[to].getBoundingClientRect().left - slides[from].getBoundingClientRect().left; });
+  let shown = -1, ticking = false, idle = 0, target = null, warmed = false;
+  const show = () => {
+    const real = realOf(at());
+    if (real === shown) return;
+    onShow(real, total, shown !== -1 && Math.abs(real - shown) > 1);
+    shown = real;
+  };
+  const settle = () => {                                     // swipe stopped: on a copy? hop to its twin
+    target = null;
+    const k = at();
+    if (k < C) hop(k, k + total); else if (k >= C + total) hop(k, k - total);
+    show();
+  };
+  const warm = () => {                                       // first touch: load the images around both seams
+    if (warmed) return; warmed = true;
+    [...slides].forEach((sl, k) => { if (k < 2 * C || k >= total) sl.querySelectorAll("img").forEach(img => img.loading = "eager"); });
+  };
+  row.addEventListener("scroll", () => {
+    warm();
+    if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; show(); }); }
+    clearTimeout(idle); idle = setTimeout(settle, 180);
+  }, { passive: true });
+  row.addEventListener("pointerenter", warm, { once: true });
+  row.addEventListener("touchstart", warm, { once: true, passive: true });
+  const move = d => {                                        // arrows: plan from where we're heading, not mid-glide
+    clearTimeout(idle);
+    let k = target ?? at();
+    if (k < C) { hop(k, k + total); k += total; } else if (k >= C + total) { hop(k, k - total); k -= total; }
+    target = k + d;
+    row.scrollTo({ left: pos(target), behavior: "smooth" });
+  };
+  row._reset = () => { jump(C + (shown < 0 ? 0 : shown)); shown = -1; show(); };
+  jump(C); show();                                           // start on the first real item
+  return { move };
+}
+const showBar = (bar, real, total, wrapped) => {             // progress line: one segment per item, wraps instantly
+  if (wrapped) bar.style.transition = "none";
+  bar.style.width = (100 / total) + "%";
+  bar.style.transform = `translateX(${real * 100}%)`;
+  if (wrapped) requestAnimationFrame(() => { bar.style.transition = ""; });
+};
+
 function wireStrips() {
   $$(".tile").forEach(t => {
-    const strip = $(".strip", t), count = $(".count", t), bar = $(".progress span", t), slides = strip.children;
-    const C = 2;                                             // copies at each end
-    const total = slides.length - 2 * C;                     // real images
-    const pos = k => slides[k].offsetLeft - slides[0].offsetLeft;
-    const at = () => { const w = pos(1) || strip.clientWidth; return Math.round(strip.scrollLeft / w); };
-    const realOf = k => ((k - C) % total + total) % total;
-    const jump = k => {                                      // instant, invisible move (snap points line up exactly)
-      strip.style.scrollSnapType = "none";
-      strip.scrollLeft = pos(k);
-      requestAnimationFrame(() => requestAnimationFrame(() => { strip.style.scrollSnapType = ""; }));
-    };
-    let shown = -1;
-    const show = () => {
-      const real = realOf(at());
-      if (real === shown) return;
-      const wrapped = shown !== -1 && Math.abs(real - shown) > 1;   // 10 -> 1: no sliding bar back across
-      if (wrapped) bar.style.transition = "none";
+    const strip = $(".strip", t), count = $(".count", t), bar = $(".progress span", t);
+    const loop = makeLoop(strip, 2, (real, total, wrapped) => {
       count.textContent = `${pad(real + 1)} / ${pad(total)}`;
-      bar.style.width = (100 / total) + "%";
-      bar.style.transform = `translateX(${real * 100}%)`;
-      if (wrapped) requestAnimationFrame(() => { bar.style.transition = ""; });
-      shown = real;
-    };
-    const settle = () => {                                   // swipe has stopped: on a copy? hop to its real twin
-      target = null;
-      const k = at();
-      if (k < C) jump(k + total);
-      else if (k >= C + total) jump(k - total);
-      show();
-    };
-    let warmed = false;
-    const warm = () => {                                     // first touch: load the images either side of the seam
-      if (warmed) return; warmed = true;
-      [0, 1, C, C + 1, total, total + 1, total + C, total + C + 1].forEach(k => { const img = slides[k] && slides[k].querySelector("img"); if (img) img.loading = "eager"; });
-    };
-    let ticking = false, idle = 0, target = null;
-    strip.addEventListener("scroll", () => {
-      warm();
-      if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; show(); }); }
-      clearTimeout(idle); idle = setTimeout(settle, 180);
-    }, { passive: true });
-    strip.addEventListener("pointerenter", warm, { once: true });
-    strip.addEventListener("touchstart", warm, { once: true, passive: true });
-    const move = d => {                                      // arrows: plan from where we're heading, not mid-glide
-      clearTimeout(idle);
-      let k = target ?? at();
-      if (k < C) { jump(k + total); k += total; } else if (k >= C + total) { jump(k - total); k -= total; }
-      target = k + d;
-      strip.scrollTo({ left: pos(target), behavior: "smooth" });
-    };
-    $$(".strip-arrows button", t).forEach(btn => btn.onclick = () => move(+btn.dataset.dir));
-    strip.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); move(e.key === "ArrowRight" ? 1 : -1); } });
-    t._reset = () => { jump(C + (shown < 0 ? 0 : shown)); show(); };
-    jump(C); show();                                          // start on the first real image
+      showBar(bar, real, total, wrapped);
+    });
+    $$(".strip-arrows button", t).forEach(btn => btn.onclick = () => loop.move(+btn.dataset.dir));
+    strip.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); loop.move(e.key === "ArrowRight" ? 1 : -1); } });
   });
 }
-addEventListener("resize", () => $$(".tile").forEach(t => t._reset && t._reset()));
+addEventListener("resize", () => $$(".strip, .reel").forEach(r => r._reset && r._reset()));
 function renderWork() {
   const list = PROJECTS.filter(p => filter === "all" || p.tags.includes(filter));
   $("#work-list").innerHTML = `<div class="tiles">${list.map((p, i) => tileStrip(p, i)).join("")}</div>`;
@@ -865,24 +892,14 @@ document.addEventListener("click", e => {
 /* ---------- Reel: swipe carousel with counter and progress ---------- */
 function wireReel() {
   const reel = $("#reel"); if (!reel) return;
-  const n = $("#reel-n"), bar = $("#reel-bar"), prev = $("#rp"), next = $("#rn");
-  const slides = $$(".slide", reel);
-  const step = () => slides[1].offsetLeft - slides[0].offsetLeft;
-  const update = () => {
-    const max = reel.scrollWidth - reel.clientWidth;
-    const i = Math.min(slides.length - 1, Math.round(reel.scrollLeft / step()));
-    n.textContent = pad(i + 1);
-    const frac = max > 0 ? reel.scrollLeft / max : 0;
-    const w = Math.max(1 / slides.length, reel.clientWidth / reel.scrollWidth);
-    bar.style.width = (w * 100) + "%";
-    bar.style.transform = `translateX(${frac * ((1 - w) / w) * 100}%)`;
-    prev.disabled = reel.scrollLeft < 4; next.disabled = reel.scrollLeft > max - 4;
-  };
-  reel.addEventListener("scroll", () => requestAnimationFrame(update), { passive: true });
-  prev.onclick = () => reel.scrollBy({ left: -step(), behavior: "smooth" });
-  next.onclick = () => reel.scrollBy({ left: step(), behavior: "smooth" });
-  addEventListener("resize", update);
-  update();
+  const n = $("#reel-n"), bar = $("#reel-bar");
+  const loop = makeLoop(reel, REEL_COPIES, (real, total, wrapped) => {
+    n.textContent = pad(real + 1);
+    showBar(bar, real, total, wrapped);
+  });
+  $("#rp").onclick = () => loop.move(-1);
+  $("#rn").onclick = () => loop.move(1);
+  reel.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); loop.move(e.key === "ArrowRight" ? 1 : -1); } });
 }
 
 /* ---------- Work: filters ---------- */
