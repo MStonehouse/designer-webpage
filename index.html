@@ -1,991 +1,108 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111213" media="(prefers-color-scheme: dark)">
-<title>I&amp;CA Studio</title>
-<meta name="description" content="I&amp;CA is a Vancouver design studio creating logos, brand identities and websites for independent businesses.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@300;400;500&family=DM+Mono:wght@400&display=swap">
-<style>
-/* Layout: a gallery wall. Generous white field, serif display at poster scale, full-bleed work that swipes on phones,
-   charcoal bands for weight, one brass italic ampersand as the signature. */
-:root{
-  --paper:#f6f6f3;   /* gallery wall */
-  --ink:#151515;     /* text */
-  --muted:#6b6a66;   /* secondary text */
-  --line:#dcdcd6;    /* hairlines */
-  --well:#ebebe6;    /* image placeholders */
-  --night:#151618;   /* charcoal bands */
-  --night-ink:#f1efe9;
-  --night-muted:#9b9891;
-  --night-line:#2c2d30;
-  --brass:#84622f;   /* the one accent: ampersand, small marks */
-  --brass-night:#c6a26a;
-  --serif:"Bodoni Moda","Didot","Bodoni 72","Playfair Display",Georgia,serif;
-  --sans:"Hanken Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
-  --gl:max(20px, env(safe-area-inset-left,0px));
-  --gr:max(20px, env(safe-area-inset-right,0px));
-  --ease:cubic-bezier(.22,.7,.16,1);
-  --dock-h:0px;
-}
-@media (min-width:760px){:root{--gl:max(clamp(28px,5vw,80px), env(safe-area-inset-left,0px));--gr:max(clamp(28px,5vw,80px), env(safe-area-inset-right,0px))}}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --paper:#111213;--ink:#eeece6;--muted:#9a9892;--line:#2a2b2e;--well:#1b1c1f;
-  --night:#1a1b1e;--night-ink:#f1efe9;--night-muted:#9b9891;--night-line:#303135;
-  --brass:#c6a26a;--brass-night:#c6a26a;color-scheme:dark}}
-:root[data-theme="dark"]{
-  --paper:#111213;--ink:#eeece6;--muted:#9a9892;--line:#2a2b2e;--well:#1b1c1f;
-  --night:#1a1b1e;--night-ink:#f1efe9;--night-muted:#9b9891;--night-line:#303135;
-  --brass:#c6a26a;--brass-night:#c6a26a;color-scheme:dark}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>I&amp;CA Studio</title>
+    <meta name="description" content="I&amp;CA is a Vancouver design studio creating logos, brand identities and websites for independent businesses.">
+    <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#111213" media="(prefers-color-scheme: dark)">
 
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;overflow-anchor:none}
-body{margin:0;background:var(--paper);color:var(--ink);font:300 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:var(--dock-h)}
-img{max-width:100%;display:block}
-a{color:inherit;-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
-:focus-visible{outline:1.5px solid var(--brass);outline-offset:3px}
-p{margin:0}
-h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
-.wrap{padding-left:var(--gl);padding-right:var(--gr);max-width:1600px;margin:0 auto}
-.bleed{margin-left:calc(var(--gl) * -1);margin-right:calc(var(--gr) * -1)}
-.serif{font-family:var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16)}
-.mono{font:400 11.5px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.amp{font-family:var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);font-style:italic;color:var(--brass);font-weight:400}
-.skip{position:absolute;left:-999px}.skip:focus{left:16px;top:16px;z-index:99;background:var(--paper);padding:10px 14px}
+    <!-- Icons: the brass ampersand -->
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 
-/* ---------- Header ---------- */
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--paper)}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--paper) 86%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);transition:box-shadow .3s}
-.top.scrolled{box-shadow:0 1px 0 var(--line)}
-.top-row{display:flex;align-items:center;justify-content:space-between;height:64px;gap:20px}
-.logo{font:500 24px/1 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.01em;text-decoration:none;display:inline-flex;align-items:baseline;padding:8px 0}
-.logo .amp{font-size:1.08em;margin:0 .02em}
-.desk-nav{display:none;gap:clamp(24px,3vw,44px);align-items:center}
-.desk-nav a{font:400 15px/1 var(--sans);text-decoration:none;padding:10px 0;position:relative;color:var(--muted);transition:color .25s}
-.desk-nav a:hover,.desk-nav a[aria-current="page"]{color:var(--ink)}
-.desk-nav a[aria-current="page"]::after{content:"";position:absolute;left:50%;bottom:0;width:4px;height:4px;border-radius:50%;background:var(--brass);transform:translateX(-50%)}
-.pill{display:inline-flex;align-items:center;gap:10px;font:400 14px/1 var(--sans);text-decoration:none;padding:13px 20px;border-radius:999px;border:1px solid var(--ink);transition:background .25s,color .25s}
-.pill:hover{background:var(--ink);color:var(--paper)}
-.top-time{display:inline-flex;gap:8px;align-items:center}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--brass);display:inline-block}
-@media (min-width:760px){.desk-nav{display:flex}.top-time{display:none}}
+    <!-- Start downloading the two most-used fonts straight away, so text appears in the right face sooner -->
+    <link rel="preload" href="assets/fonts/bodoni-moda-variable.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/hanken-grotesk-300.woff2" as="font" type="font/woff2" crossorigin>
 
-/* ---------- Mobile dock (thumb reach) ---------- */
-/* Moves only on the GPU (transform), no live blur behind it: smooth on iPhone */
-.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate3d(-50%,0,0);will-change:transform;backface-visibility:hidden;z-index:35;display:flex;gap:2px;padding:5px;border-radius:999px;background:color-mix(in srgb,var(--night) 96%,transparent);box-shadow:0 10px 30px -10px rgba(0,0,0,.45);transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .25s ease-out}   /* showing: quick and responsive */
-/* Hidden: slide past its own height + its gap + the iPhone home-bar area.
-   Hiding gets its own, slower motion: a smooth ease-in-out glide, with the fade held back
-   until the last part of the trip so you see it slide away rather than blink out. */
-.dock.away{transform:translate3d(-50%,calc(100% + 14px + env(safe-area-inset-bottom,0px) + 48px),0);opacity:0;pointer-events:none;
-  transition:transform .6s cubic-bezier(.45,0,.25,1),opacity .3s ease-in .3s}
-.dock a{font:400 14px/1 var(--sans);color:var(--night-muted);text-decoration:none;padding:13px 17px;border-radius:999px;transition:color .25s,background .25s;white-space:nowrap}
-.dock a[aria-current="page"]{color:var(--night);background:var(--night-ink)}
-@media (min-width:760px){.dock{display:none}}
-@media (max-width:759px){:root{--dock-h:calc(86px + env(safe-area-inset-bottom,0px))}}
+    <link rel="stylesheet" href="css/style.css">
 
-/* ---------- Views ---------- */
-main{display:block;min-height:60vh}
-main:focus{outline:none}
-.desk-nav .pill{padding:12px 20px;color:var(--ink)}
-.desk-nav .pill:hover{color:var(--paper)}
-.view{animation:view .7s var(--ease) both}
-@keyframes view{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    <!-- Content first, then the code that builds the pages from it. "defer" runs them
+         in this order once the page below has loaded. -->
+    <script src="js/projects.js" defer></script>
+    <script src="js/main.js" defer></script>
+  </head>
 
-/* ---------- Home hero ---------- */
-.hero{padding-block:clamp(28px,6vw,72px) clamp(28px,4vw,48px)}
-.mast{font:600 clamp(96px,35vw,380px)/.8 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.045em;margin-left:-.04em;display:flex;align-items:baseline;white-space:nowrap}
-.mast .amp{font-size:1.02em;margin:0 -.015em 0 .005em;letter-spacing:0;display:inline-block;animation:amp 1.4s .15s var(--ease) both;transform-origin:50% 70%}
-.mast .l{display:inline-block;animation:rise 1s var(--ease) both}
-.mast .l:last-child{animation-delay:.12s}
-@keyframes rise{from{transform:translateY(.12em);opacity:0}to{transform:none;opacity:1}}
-@keyframes amp{from{transform:rotate(-14deg) scale(.86);opacity:0}to{transform:none;opacity:1}}
-.hero-grid{display:grid;gap:22px;margin-top:clamp(24px,4vw,48px)}
-.hero-grid h1{font:400 clamp(30px,4.6vw,64px)/1.08 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.01em}
-.hero-grid h1 em{font-style:italic}
-.hero-grid .lede{color:var(--muted);max-width:44ch;font-size:clamp(16px,1.3vw,18px)}
-.hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px}
-.hero-actions .ghost{min-height:58px;padding:12px 24px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;font:400 15px/1 var(--sans);text-decoration:none;padding:19px 32px;min-height:58px;border-radius:999px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);cursor:pointer;transition:transform .25s var(--ease),background .25s,color .25s}
-.btn:hover{background:transparent;color:var(--ink)}
-.btn:active{transform:scale(.98)}
-.btn.light{background:var(--night-ink);color:var(--night);border-color:var(--night-ink)}
-.btn.light:hover{background:transparent;color:var(--night-ink)}
-.arr{display:inline-block;transition:transform .3s var(--ease)}
-a:hover .arr,button:hover .arr{transform:translateX(4px)}
-@media (min-width:900px){
-  .hero-grid{grid-template-columns:1.25fr 1fr;align-items:end;gap:48px}
-  .hero-grid .side{display:flex;flex-direction:column;gap:26px;padding-bottom:6px}
-}
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
 
-/* ---------- Reel (swipe on phones) ---------- */
-.reel-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
-.reel{display:grid;grid-auto-flow:column;grid-auto-columns:84%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--gl);padding-inline:var(--gl) var(--gr);padding-bottom:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
-.reel::-webkit-scrollbar{display:none}
-.reel .slide{scroll-snap-align:start;text-decoration:none;display:flex;flex-direction:column;gap:14px;min-width:0}
-.frame{position:relative;overflow:hidden;background:var(--well);aspect-ratio:4/5;border-radius:2px}
-.frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease),opacity .7s var(--ease)}
-.frame .alt{opacity:0}
-@media (hover:hover) and (pointer:fine){.slide:hover .frame img,.tile:hover .frame img{transform:scale(1.035)}.slide:hover .frame .alt,.tile:hover .frame .alt{opacity:1}}
-.cap{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.cap h3{font:400 clamp(24px,2.2vw,32px)/1.1 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16)}
-.progress{height:1px;background:var(--line);position:relative;margin-top:22px}
-.progress span{position:absolute;inset:0 auto 0 0;background:var(--ink);width:16%;transition:transform .35s var(--ease),width .35s var(--ease)}
-.reel-ctrl{display:flex;gap:8px}
-.circ{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:transparent;cursor:pointer;display:grid;place-items:center;transition:border-color .2s,background .2s,color .2s}
-.circ:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
-.circ:disabled{opacity:.35;pointer-events:none}
-@media (min-width:760px){.reel{grid-auto-columns:42%;gap:20px}}
-@media (min-width:1200px){.reel{grid-auto-columns:31%}}
-/* Whole-pixel card widths: browsers scroll in whole pixels, so every loop jump lands exactly */
-@supports (width:round(down,10.5px,1px)){
-  .reel{grid-auto-columns:round(down,84%,1px)}
-  .strip{grid-auto-columns:round(down,100%,1px)}
-  @media (min-width:760px){.reel{grid-auto-columns:round(down,42%,1px)}}
-  @media (min-width:1200px){.reel{grid-auto-columns:round(down,31%,1px)}}
-  @media (max-width:759px){.strip{grid-auto-columns:round(down,86%,1px)}}
-}
-@media (max-width:759px){.reel-ctrl{display:none}}
+    <!-- Header: logo, desktop menu, and the Vancouver clock on phones -->
+    <header class="top" id="top">
+      <div class="wrap top-row">
+        <a class="logo" href="#home" aria-label="I&amp;CA home">I<span class="amp">&amp;</span>CA</a>
+        <nav class="desk-nav" aria-label="Main">
+          <a href="#work" data-nav="work">Work</a>
+          <a href="#about" data-nav="about">Studio</a>
+          <a href="#contact" data-nav="contact">Contact</a>
+          <a class="pill" href="#contact">Start a project <span class="arr" aria-hidden="true">→</span></a>
+        </nav>
+        <span class="top-time mono" aria-label="Local time in Vancouver"><span class="dot" aria-hidden="true"></span>Vancouver <span class="clock">--:--</span></span>
+      </div>
+    </header>
 
-/* ---------- Sections ---------- */
-.section{padding-block:clamp(80px,12vw,168px)}
-.eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:clamp(24px,3vw,36px)}
-.eyebrow::before{content:"";width:28px;height:1px;background:var(--brass)}
-.statement{font:400 clamp(30px,4.4vw,68px)/1.14 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.012em;max-width:22ch}
-.statement em{font-style:italic;color:var(--brass)}
-.split{display:grid;gap:28px}
-@media (min-width:900px){.split{grid-template-columns:1fr 1fr;gap:64px;align-items:end}}
-.body-lg{font-size:clamp(17px,1.35vw,19px);color:var(--muted);max-width:52ch;display:grid;gap:18px}
+    <!-- Each page (Home, Work, a project, Studio, Contact) is drawn in here by js/main.js -->
+    <main id="main" tabindex="-1"></main>
 
-/* Night band */
-.night{background:var(--night);color:var(--night-ink)}
-.night .mono{color:var(--night-muted)}
-.night .eyebrow::before{background:var(--brass-night)}
-.fig{font:500 clamp(150px,44vw,520px)/.76 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.05em;margin-left:-.05em;display:flex;align-items:flex-start}
-.fig sup{font:italic 400 .34em/1 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);color:var(--brass-night);margin-left:.06em;margin-top:.12em}
-.night .grid2{display:grid;gap:36px;align-items:end}
-@media (min-width:980px){.night .grid2{grid-template-columns:1.2fr 1fr;gap:64px}}
-.night h2{font:400 clamp(26px,3vw,42px)/1.18 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16)}
-.night p{color:var(--night-muted);max-width:50ch}
-.night .src{font-size:13px;margin-top:20px;padding-top:16px;border-top:1px solid var(--night-line)}
+    <footer>
+      <div class="wrap">
+        <div class="foot">
+          <div class="foot-contact">
+            <span class="mono">New projects</span>
+            <a class="mail" href="mailto:kevin@iandca.ca">kevin@iandca.ca</a>
+            <div><button class="copy-btn" type="button" data-copy="kevin@iandca.ca">Copy email</button></div>
+          </div>
+          <div class="foot-cols">
+            <div>
+              <span class="mono">Studio</span>
+              <span class="note">Metro Vancouver, BC</span>
+              <span class="note dim"><span class="clock">--:--</span> local time</span>
+            </div>
+            <div>
+              <span class="mono">Follow</span>
+              <a href="https://www.behance.net/iandca" target="_blank" rel="noopener">Behance</a>
+              <a href="https://dribbble.com/iandca" target="_blank" rel="noopener">Dribbble</a>
+              <a href="https://ca.pinterest.com/industrialandcommunicationarts/" target="_blank" rel="noopener">Pinterest</a>
+            </div>
+            <div>
+              <span class="mono">Pages</span>
+              <a href="#work">Work</a>
+              <a href="#about">Studio</a>
+              <a href="#contact">Contact</a>
+            </div>
+          </div>
+        </div>
+        <div class="foot-mark" aria-hidden="true">I<span class="amp">&amp;</span>CA</div>
+        <div class="foot-base mono">
+          <span>© <span id="yr">2026</span> Industrial &amp; Communication Arts</span>
+          <span>Designed in Vancouver</span>
+        </div>
+      </div>
+    </footer>
 
-/* Services: hairline list */
-.svc{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.svc li{display:grid;gap:8px;padding:26px 0;border-bottom:1px solid var(--line)}
-.svc h3{font:400 clamp(26px,3vw,40px)/1.1 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16)}
-.svc p{color:var(--muted);max-width:48ch}
-@media (min-width:860px){.svc li{grid-template-columns:1fr 1fr;align-items:baseline;gap:40px;padding:34px 0}}
-
-/* Process: a real sequence */
-.steps{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:s}
-.steps li{position:relative;padding:0 0 34px 44px;counter-increment:s}
-.steps li::before{content:"0" counter(s);position:absolute;left:0;top:4px;font:400 11.5px/1 var(--mono);color:var(--brass)}
-.steps li::after{content:"";position:absolute;left:6px;top:24px;bottom:4px;width:1px;background:var(--line)}
-.steps li:last-child::after{display:none}
-.steps h3{font:400 24px/1.2 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);margin-bottom:6px}
-.steps p{color:var(--muted);font-size:16px;max-width:40ch}
-@media (min-width:980px){
-  .steps{grid-template-columns:repeat(4,1fr);gap:28px}
-  .steps li{padding:56px 0 0}
-  .steps li::before{top:0}
-  .steps li::after{left:0;right:-28px;top:28px;bottom:auto;width:auto;height:1px}
-}
-
-/* CTA */
-.cta{display:grid;gap:30px}
-.cta h2{font:500 clamp(44px,8vw,128px)/.98 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.025em}
-.cta h2 em{font-style:italic;color:var(--brass)}
-@media (min-width:900px){.cta{grid-template-columns:1.6fr 1fr;align-items:end}.cta .act{justify-self:end}}
-.cta .act{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
-
-/* ---------- Footer ---------- */
-footer{background:var(--night);color:var(--night-ink);padding-block:clamp(64px,9vw,120px) 28px;margin-top:clamp(72px,10vw,140px)}
-footer .mono{color:var(--night-muted)}
-.foot{display:grid;gap:40px}
-.mail{font:400 clamp(30px,5.6vw,80px)/1.05 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);text-decoration:none;word-break:break-word;letter-spacing:-.01em}
-.mail:hover{color:var(--brass-night)}
-.copy-btn{background:transparent;border:1px solid var(--night-line);color:var(--night-ink);border-radius:999px;padding:11px 16px;font:400 13px/1 var(--sans);cursor:pointer;transition:border-color .2s}
-.copy-btn:hover{border-color:var(--night-ink)}
-.foot-cols{display:grid;grid-template-columns:1fr 1fr;gap:28px}
-.foot-cols div{display:flex;flex-direction:column;gap:10px}
-.foot-cols a{text-decoration:none;font-size:15.5px;color:var(--night-ink);padding:2px 0}
-.foot-cols a:hover{color:var(--brass-night)}
-@media (min-width:900px){.foot{grid-template-columns:1.4fr 1fr}.foot-cols{grid-template-columns:repeat(3,1fr)}}
-.foot-mark{font:600 clamp(104px,30vw,440px)/.78 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.05em;margin:clamp(40px,6vw,86px) 0 0 -.04em;padding-block:.16em .05em;white-space:nowrap;overflow:hidden;color:var(--night-ink);user-select:none}
-/* the padding gives the tall & and C room inside the cropped box; side cropping still stops sideways scroll */
-.foot-mark .amp{color:var(--brass-night)}
-.foot-base{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:18px;margin-top:22px;border-top:1px solid var(--night-line)}
-
-/* ---------- Work page ---------- */
-.page-head{padding-block:clamp(32px,6vw,88px) clamp(24px,3vw,40px)}
-.page-head h1{font:500 clamp(64px,13vw,200px)/.86 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.035em}
-.page-head h1 em{font-style:italic;color:var(--brass)}
-.page-head .lede{color:var(--muted);max-width:46ch;margin-top:20px;font-size:clamp(16px,1.3vw,18px)}
-.toolbar{display:flex;width:fit-content;max-width:100%;align-items:center;gap:8px;padding:5px;border-radius:999px;margin-bottom:clamp(28px,4vw,48px);position:sticky;top:calc(72px + env(safe-area-inset-top,0px));z-index:5;background:color-mix(in srgb,var(--night) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 10px 30px -12px rgba(0,0,0,.45);overflow:hidden}
-/* Inside the bar, buttons look like the bottom menu: muted text, active one is a light pill */
-.toolbar .chips{margin:0;padding:0;gap:2px;border-radius:999px}
-.toolbar .chip{border:0;color:var(--night-muted);min-height:44px;padding:13px 17px}
-.toolbar .chip:hover{color:var(--night-ink)}
-.toolbar .chip[aria-pressed="true"]{background:var(--night-ink);color:var(--night)}
-.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-4px;padding:4px}
-.chips::-webkit-scrollbar{display:none}
-.chip{flex:none;font:400 14px/1 var(--sans);padding:11px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;cursor:pointer;transition:all .2s;min-height:42px;user-select:none;position:relative}
-.chip:hover{border-color:var(--ink)}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-@media (max-width:759px){
-  .toolbar{width:auto}
-  /* Phones: the filters share the whole bar in equal parts, so the gaps at both ends match */
-  .toolbar .chips{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;overflow:visible}
-  .toolbar .chip{padding:13px 6px;text-align:center;white-space:nowrap}
-}
-
-.tiles{display:grid;gap:clamp(56px,7vw,104px) 28px}
-.tile{display:flex;flex-direction:column;gap:14px;min-width:0}
-/* Each client is a swipe strip of its own images */
-.strip-wrap{position:relative}
-.strip{display:grid;grid-auto-flow:column;grid-auto-columns:100%;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
-.strip::-webkit-scrollbar{display:none}
-.strip a{scroll-snap-align:start;display:block;aspect-ratio:4/3;background:var(--well);overflow:hidden}
-.strip img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
-@media (hover:hover) and (pointer:fine){.strip a:hover img{transform:scale(1.02)}}
-.count{position:absolute;top:12px;right:12px;pointer-events:none;font:400 11px/1 var(--mono);letter-spacing:.06em;color:var(--night-ink);background:color-mix(in srgb,var(--night) 82%,transparent);padding:7px 10px;border-radius:999px;font-variant-numeric:tabular-nums}
-.strip-arrows{position:absolute;bottom:14px;right:14px;display:flex;gap:6px;opacity:0;transition:opacity .3s}
-.strip-arrows .circ{background:var(--paper);border-color:var(--paper)}
-.strip-arrows .circ:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.tile:hover .strip-arrows,.strip-arrows:focus-within{opacity:1}
-@media not ((hover:hover) and (pointer:fine)){.strip-arrows{display:none}}
-.tile .progress{margin-top:0}
-.tile-cap{display:flex;justify-content:space-between;align-items:baseline;gap:16px;text-decoration:none}
-.tile-cap h3{font:400 clamp(30px,3.2vw,46px)/1.05 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" 16}
-.tile-cap .go{white-space:nowrap;font-size:14.5px;color:var(--muted);display:inline-flex;gap:8px;align-items:center}
-.tile-cap:hover .go{color:var(--ink)}
-.tile .sub{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:15px;margin-top:-6px}
-@media (max-width:759px){
-  .strip-wrap{margin-left:calc(var(--gl) * -1);margin-right:calc(var(--gr) * -1)}
-  .strip{grid-auto-columns:86%;scroll-padding-inline:var(--gl);padding-inline:var(--gl) var(--gr)}
-  .count{right:calc(var(--gr) + 10px)}
-}
-@media (min-width:760px){
-  .tiles{grid-template-columns:1fr 1fr}
-  .tiles .tile:nth-child(even){margin-top:clamp(60px,10vw,160px)}
-}
-}
-
-/* Index view */
-
-/* ---------- Project page ---------- */
-.p-top{padding-block:clamp(20px,4vw,48px) clamp(24px,4vw,48px)}
-.crumbs{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:clamp(28px,5vw,64px)}
-.back{display:inline-flex;align-items:center;gap:10px;text-decoration:none;padding:10px 0;font-size:15px}
-.back:hover .arr{transform:translateX(-4px)}
-.p-title{font:500 clamp(64px,15vw,232px)/.84 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.04em;margin-left:-.03em}
-.p-sub{display:flex;gap:12px 22px;flex-wrap:wrap;margin-top:22px;align-items:center}
-.tag{font:400 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);padding:7px 10px;border-radius:999px;color:var(--muted)}
-.p-cover{background:var(--well);overflow:hidden;cursor:zoom-in}
-.p-cover img{width:100%;height:auto;max-height:88vh;object-fit:cover}
-@media (min-width:760px){.p-cover{margin-left:0;margin-right:0}}
-.p-intro{display:grid;gap:36px;padding-block:clamp(48px,7vw,104px)}
-.p-intro .lead{font:400 clamp(26px,3.1vw,44px)/1.22 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.008em}
-.facts{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:0;border-top:1px solid var(--line)}
-.facts > div{padding:16px 12px 16px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px;min-width:0}
-.facts dd{margin:0;font-size:15.5px}
-.facts .wide{grid-column:1/-1}
-.sws{display:flex;gap:6px;margin-top:4px}
-.sw{width:28px;height:28px;border-radius:50%;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 14%,transparent)}
-.p-text{display:grid;gap:18px;color:var(--muted);font-size:clamp(16.5px,1.3vw,18.5px);max-width:58ch}
-@media (min-width:980px){.p-intro{grid-template-columns:1fr 1fr;gap:72px}.p-intro .lead{grid-column:1/-1;max-width:30ch}}
-.gallery{display:grid;gap:clamp(10px,1.4vw,20px)}
-.gallery figure{margin:0;background:var(--well);cursor:zoom-in;overflow:hidden}
-.gallery img{width:100%;height:auto;transition:transform 1.2s var(--ease)}
-@media (hover:hover){.gallery figure:hover img{transform:scale(1.012)}}
-@media (max-width:759px){.gallery{margin-left:calc(var(--gl) * -1);margin-right:calc(var(--gr) * -1)}}
-@media (min-width:760px){.gallery{grid-template-columns:1fr 1fr}.gallery figure{grid-column:1/-1}.gallery figure.half{grid-column:span 1}}
-@media (max-width:759px){.gallery.has-halves{grid-template-columns:1fr 1fr}.gallery.has-halves figure{grid-column:1/-1}.gallery.has-halves figure.half{grid-column:span 1}}
-.next{display:block;text-decoration:none;margin-top:clamp(80px,10vw,140px);padding-top:22px;border-top:1px solid var(--ink)}
-.next .row{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
-.next h2{font:500 clamp(58px,12vw,180px)/.9 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.035em}
-.next:hover h2{font-style:italic}
-.next .frame{aspect-ratio:16/9;margin-top:24px}
-
-/* ---------- Lightbox (swipe) ---------- */
-dialog.lb{border:0;padding:0;margin:0;width:100vw;height:100dvh;max-width:none;max-height:none;background:var(--night);color:var(--night-ink)}
-dialog.lb::backdrop{background:var(--night)}
-.lb-track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior:contain}
-.lb-track::-webkit-scrollbar{display:none}
-.lb-track figure{flex:0 0 100%;margin:0;scroll-snap-align:center;display:grid;place-items:center;padding:calc(64px + env(safe-area-inset-top,0px)) max(12px,3vw) calc(64px + env(safe-area-inset-bottom,0px))}
-.lb-track img{max-width:100%;max-height:100%;object-fit:contain}
-.lb-bar{position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) var(--gr) 12px var(--gl);pointer-events:none}
-.lb-bar > *{pointer-events:auto}
-.lb-bar .mono{color:var(--night-muted)}
-.lb-x{background:transparent;border:1px solid var(--night-line);color:var(--night-ink);border-radius:999px;padding:12px 18px;cursor:pointer;font:400 14px/1 var(--sans)}
-.lb-arrows{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);display:flex;gap:10px}
-.lb-arrows .circ{border-color:var(--night-line);color:var(--night-ink)}
-.lb-arrows .circ:hover{background:var(--night-ink);color:var(--night)}
-.lb-hint{position:fixed;bottom:calc(30px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center}
-@media (hover:hover) and (pointer:fine){.lb-hint{display:none}}
-@media not ((hover:hover) and (pointer:fine)){.lb-arrows{display:none}}
-
-/* ---------- About ---------- */
-.about-mark{background:var(--well);overflow:hidden}
-.about-mark img{width:100%;height:auto;filter:grayscale(1) contrast(1.05)}
-.principles{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.principles li{display:grid;gap:10px;padding:30px 0;border-bottom:1px solid var(--line)}
-.principles h3{font:400 clamp(26px,2.8vw,38px)/1.12 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16)}
-.principles h3 em{font-style:italic;color:var(--brass)}
-.principles p{color:var(--muted);max-width:50ch}
-@media (min-width:860px){.principles li{grid-template-columns:1fr 1fr;gap:40px;align-items:baseline}}
-
-/* ---------- Contact ---------- */
-.contact{display:grid;gap:clamp(48px,6vw,80px);padding-block:clamp(32px,6vw,88px) 0}
-@media (min-width:1000px){.contact{grid-template-columns:1fr 1.1fr;gap:88px}}
-.contact h1{font:500 clamp(52px,9vw,128px)/.92 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);letter-spacing:-.03em}
-.contact h1 em{font-style:italic;color:var(--brass)}
-.mail-card{display:flex;flex-direction:column;gap:14px;padding:22px;border:1px solid var(--line);border-radius:4px;margin-top:28px}
-.mail-card .addr{font:400 clamp(22px,2.4vw,30px)/1.2 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16);word-break:break-word;text-decoration:none}
-.mail-row{display:flex;gap:10px;flex-wrap:wrap}
-.ghost{gap:10px;background:transparent;border:1px solid var(--line);border-radius:999px;padding:12px 16px;cursor:pointer;font:400 14px/1 var(--sans);text-decoration:none;display:inline-flex;align-items:center;min-height:44px;transition:border-color .2s}
-.ghost:hover{border-color:var(--ink)}
-form{display:grid;gap:30px;align-content:start}
-.field{display:grid;gap:8px}
-.field label,legend{font:400 11.5px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.field input,.field textarea,.field select{font:300 19px/1.4 var(--sans);color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:10px 0 12px;width:100%;transition:border-color .25s;appearance:none;-webkit-appearance:none}
-.field textarea{min-height:130px;resize:vertical}
-.field input:focus,.field textarea:focus,.field select:focus{outline:0;border-bottom-color:var(--ink)}
-.field select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 13px) 52%,calc(100% - 8px) 52%;background-size:5px 5px;background-repeat:no-repeat;cursor:pointer}
-.field select option{background:var(--paper);color:var(--ink)}
-.field.invalid input,.field.invalid textarea{border-bottom:2px solid var(--brass)}
-.two{display:grid;gap:30px}
-@media (min-width:600px){.two{grid-template-columns:1fr 1fr;gap:24px}}
-fieldset{border:0;margin:0;padding:0;display:grid;gap:14px}
-legend{margin-bottom:14px}
-.need{display:flex;gap:8px;flex-wrap:wrap}
-label.chip input{position:absolute;opacity:0;width:1px;height:1px}
-label.chip:has(input:checked){background:var(--ink);color:var(--paper);border-color:var(--ink)}
-label.chip:has(input:focus-visible){outline:1.5px solid var(--brass);outline-offset:3px}
-.err{font-size:15px;color:var(--ink);border-left:2px solid var(--brass);padding-left:12px}
-.send{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-.done{display:grid;gap:14px;padding:28px;border:1px solid var(--line);border-radius:4px;align-content:start}
-.done h2{font:400 34px/1.1 var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" var(--op,16)}
-.done p{color:var(--muted)}
-.toast{position:fixed;left:50%;bottom:calc(var(--dock-h) + 20px);transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:all .35s var(--ease);z-index:60}
-.toast.on{opacity:1;transform:translate(-50%,0)}
-
-/* Optical size: low opsz = sturdier hairlines. Display headings get a little more contrast. */
-.mast,.foot-mark,.fig,.p-title,.page-head h1,.next h2,.cta h2,.contact h1{--op:18}
-@media (max-width:759px){
-  html,body{overflow-x:hidden;overscroll-behavior-x:none}
-  @supports (overflow:clip){html,body{overflow-x:clip}}
-}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
-</style>
-</head>
-<body>
-<a class="skip" href="#main">Skip to content</a>
-
-<header class="top" id="top">
-  <div class="wrap top-row">
-    <a class="logo" href="#home" aria-label="I&amp;CA home">I<span class="amp">&amp;</span>CA</a>
-    <nav class="desk-nav" aria-label="Main">
+    <!-- Mobile menu, within thumb reach (hidden on desktop) -->
+    <nav class="dock" id="dock" aria-label="Main">
+      <a href="#home" data-nav="home">Home</a>
       <a href="#work" data-nav="work">Work</a>
       <a href="#about" data-nav="about">Studio</a>
       <a href="#contact" data-nav="contact">Contact</a>
-      <a class="pill" href="#contact">Start a project <span class="arr" aria-hidden="true">→</span></a>
     </nav>
-    <span class="top-time mono" aria-label="Local time in Vancouver"><span class="dot" aria-hidden="true"></span>Vancouver <span class="clock">--:--</span></span>
-  </div>
-</header>
 
-<main id="main" tabindex="-1"></main>
-
-<footer>
-  <div class="wrap">
-    <div class="foot">
-      <div style="display:grid;gap:18px;align-content:start">
-        <span class="mono">New projects</span>
-        <a class="mail" href="mailto:kevin@iandca.ca">kevin@iandca.ca</a>
-        <div><button class="copy-btn" type="button" data-copy="kevin@iandca.ca">Copy email</button></div>
+    <!-- Full-screen image viewer for project galleries -->
+    <dialog class="lb" id="lb" aria-label="Image viewer">
+      <div class="lb-track" id="lb-track"></div>
+      <div class="lb-bar">
+        <span class="mono" id="lb-count"></span>
+        <button class="lb-x" id="lb-x" type="button">Close</button>
       </div>
-      <div class="foot-cols">
-        <div><span class="mono">Studio</span><span style="font-size:15.5px">Metro Vancouver, BC</span><span style="font-size:15.5px;color:var(--night-muted)"><span class="clock">--:--</span> local time</span></div>
-        <div><span class="mono">Follow</span><a href="https://www.behance.net/iandca" target="_blank" rel="noopener">Behance</a><a href="https://dribbble.com/iandca" target="_blank" rel="noopener">Dribbble</a><a href="https://ca.pinterest.com/industrialandcommunicationarts/" target="_blank" rel="noopener">Pinterest</a></div>
-        <div><span class="mono">Pages</span><a href="#work">Work</a><a href="#about">Studio</a><a href="#contact">Contact</a></div>
+      <div class="lb-arrows">
+        <button class="circ" id="lb-prev" type="button" aria-label="Previous image">←</button>
+        <button class="circ" id="lb-next" type="button" aria-label="Next image">→</button>
       </div>
-    </div>
-    <div class="foot-mark" aria-hidden="true">I<span class="amp">&amp;</span>CA</div>
-    <div class="foot-base mono"><span>© <span id="yr">2026</span> Industrial &amp; Communication Arts</span><span>Designed in Vancouver</span></div>
-  </div>
-</footer>
+      <p class="lb-hint mono">Swipe to browse</p>
+    </dialog>
 
-<nav class="dock" id="dock" aria-label="Main">
-  <a href="#home" data-nav="home">Home</a>
-  <a href="#work" data-nav="work">Work</a>
-  <a href="#about" data-nav="about">Studio</a>
-  <a href="#contact" data-nav="contact">Contact</a>
-</nav>
-
-
-<dialog class="lb" id="lb" aria-label="Image viewer">
-  <div class="lb-track" id="lb-track"></div>
-  <div class="lb-bar"><span class="mono" id="lb-count"></span><button class="lb-x" id="lb-x" type="button">Close</button></div>
-  <div class="lb-arrows"><button class="circ" id="lb-prev" type="button" aria-label="Previous image">←</button><button class="circ" id="lb-next" type="button" aria-label="Next image">→</button></div>
-  <p class="lb-hint mono">Swipe to browse</p>
-</dialog>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script>
-/* ---------- Image source: I&CA's existing Adobe Portfolio CDN ---------- */
-const CDN = "https://cdn.myportfolio.com/e3de7dd9-4ecf-4bc4-9b60-4e027ea0bb97/";
-const im = (id, w, ext, h) => ({ src: `${CDN}${id}_rw_${w}.${ext}?h=${h}`, w });
-
-const HERO = im("05802ab3-43ad-4ce5-8d1b-3721f42a68ec", 3840, "gif", "b9168cd53a4a7091f825a2be7d2b26db");
-
-/* ---------- Projects (images grouped by client, in their original order) ---------- */
-const PROJECTS = [
-  {
-    slug: "boris", name: "Boris Bakery", sector: "Bakery", scope: "Logo · Identity · Photo direction",
-    tags: ["identity"], type: "Custom stencil mark",
-    palette: ["#111111", "#ffffff", "#ef6a1e"], paletteNames: "Black, white, orange",
-    intro: "A neighbourhood bakery built around Irena Boris and one simple promise: exceptional bread at a fair price, so good it sells out every day.",
-    body: [
-      "Irena is the Canadian-born daughter of Russian immigrants, and the brand had to carry both her standards and her warmth. The mark is drawn with a subtractive, semi-stencil cut. It is hard-edged, but it stays simple.",
-      "Black and white carry the identity. Orange is used sparingly, as a single bright accent. Photography stays close to the bread: warm, daily and hand-made."
-    ],
-    cover: [im("54ab03bc-d521-407e-9272-95c60bb39d79",3840,"jpg","c170b10fa4f254fd4edd54eab407c655"), im("6ab97552-c211-479e-a786-d95a393608f0",1920,"jpg","cd6eb8e274e01ab3657767f4dd8c7f0d")],
-    images: [
-      im("1e951e30-00d9-41fd-be5b-6c430b869bc6",3840,"jpg","c1bc4a14f3ec087df4664e5f0bd9d5ab"),
-      im("f9482549-101f-4b59-8404-5663454c081d",3840,"jpg","83a61f195f3ef9910965ba5188ef6d52"),
-      im("9466bbbc-fd1b-4afb-b389-d4a0d7366312",1920,"jpg","0c30e46b6bbc08fdba82cdec8929c515"),
-      im("66d3e4cc-dd14-4eda-9fa0-8026f513be8f",1200,"jpg","d8bf521ed955b223c5f151071d678d18"),
-      im("6176e5d1-3773-4fc6-bb70-c883b422932b",600,"jpg","c91906d9ef7cf8936e72290da1d28bbb"),
-      im("5e442787-657d-4e4d-98e6-829d670cc417",3840,"jpg","306e3218ca93533c0e32d28cb4d94f7a"),
-      im("19d86c35-a5b5-460f-97e2-eb46774756b0",3840,"png","f6861ef0c2f543daee8d8598b48ecafb"),
-      im("3ee765d8-ea8c-498b-9bfb-fd2c686f9e69",600,"jpg","15a4651f2d6b602af559db5ef28d2807"),
-      im("5b4a5e4f-65d2-42b1-8861-f4b5e63d282f",600,"jpg","a8cdb3aceef2c0ccd878b2ae7b7de71f")
-    ]
-  },
-  {
-    slug: "greenleaf", name: "Greenleaf", sector: "Renewable energy", scope: "Wordmark · Symbol · Digital",
-    tags: ["identity","digital"], type: "All-caps geometric sans",
-    palette: ["#1b2a22", "#ffffff", "#8fae96"], paletteNames: "Deep green, white, sage",
-    intro: "An energy company working across solar, wind, hydro, geothermal and bioenergy, built to replace the old utility model with something cleaner and quieter.",
-    body: [
-      "The wordmark is all caps with an even stroke and generous letter-spacing. It reads as calm, precise and premium, and it holds up in print and on screen.",
-      "The teardrop symbol stands for water, the thread that runs from run-of-river hydro to geothermal cycles. Wide landscape photography shows the scale of the work while keeping its footprint feeling light."
-    ],
-    cover: [im("6a5d6d81-c731-4361-bb92-39dd5e7f372d",1920,"jpg","baca9e68666574388a9f0128ec557287"), im("bc05b46e-1804-4d25-87b9-3ada6d2e39f6",1200,"gif","e7b90830a4fc3d65b5ced24061e054f6")],
-    images: [
-      im("d6efef44-7f05-453b-98a2-7e7055f098b6",1920,"jpg","155653d67a1031b82d944f2c06cb576e"),
-      im("02273a88-d952-4368-a5df-452abb651724",1920,"jpg","a00bb15027a96717277b1501835961d8"),
-      im("17434f9d-5b38-4648-92ce-8fbe645c6c95",3840,"jpg","8c9cc2091b7781a4df84ccc24fa9a939"),
-      im("1dd10e9e-368a-4ec2-b309-a36588d6837f",1920,"jpg","9483bca9c63afab970cd50ae42f7b943"),
-      im("d78b0a8b-41d4-4b23-9779-dfee4280d891",1920,"jpg","0161417e51465fae5789c893685f8ddf")
-    ]
-  },
-  {
-    slug: "strata", name: "Strata", sector: "Property technology", scope: "Identity · Product design",
-    tags: ["identity","digital"], type: "Belleza, Inter",
-    palette: ["#c8102e", "#111111", "#ffffff", "#3a3d42"], paletteNames: "Strata Red, black, white, graphite glass",
-    intro: "A strata management platform for the condo buildings and strata corporations of British Columbia. Owners and council get one place for everything the building runs on.",
-    body: [
-      "The name comes from geology: layers laid down over time. The symbol is an S cut into three pieces. Two quarter-rounds form the ground, and the slab between them is the stratum. Both arcs share one radius, so the mark works as a sign, an app icon or a one-colour print.",
-      "The app covers strata fees, the contingency reserve fund, maintenance requests, AGM voting, bylaws, documents and amenity bookings. It was designed at desktop scale first, then carried through to tablet and phone."
-    ],
-    cover: [im("d34d256a-8afb-416f-8a6c-9a9d23e58cb0",1920,"jpg","02172e2726eaaeae05d5c025e7c8fe34"), im("4f6cce4e-3cd0-4b88-94e1-38da8fb3e9cc",1200,"gif","a90406a62c9c9ad9e49cbbb3fd975ac0")],
-    images: [
-      im("c7244871-dbe7-4df7-841d-6677c190c53b",1920,"jpg","bc4454285a43adac7e22097c32e588e8"),
-      im("36e362b3-cfc9-48b5-a7e2-a8f742390a2f",1920,"jpg","fe869343b92bc376c76bb60c9a0aa507"),
-      im("e9df35a0-793d-4c9d-ae4f-f95037bebe83",1920,"jpg","69fbaef8accc54a1789da26397ea111d"),
-      im("966cae0e-adca-48a9-80a6-628ec9bb3cfc",1920,"jpg","5c461ec5f3fd6cc60bc866e077a854cb"),
-      im("4c652345-e5dc-4427-94d3-26a3d216feb5",1920,"jpg","185de8f6d771e05e577a8cc680b7422c"),
-      im("57f677ad-34dd-41b4-8007-1993344e6c29",1920,"jpg","f01388768b81a3c4774da7ee2f71e9bd"),
-      im("ff30355d-7c43-47af-8f6a-1e1ae6300f73",1920,"jpg","0e691fcc90c116b21bb22eb594ce96e9"),
-      im("792a7b91-7e2f-4f53-a8af-0a08ec04e4d5",1920,"jpg","d3514615989e1b8594a0abd1e101d4b6"),
-      im("950aa7b9-5f93-4ec1-b1e4-b375aec0d40f",1920,"jpg","57f35e4c64e2acdfc4ca741b121aa297"),
-      im("484c98e4-8ec5-4cf0-9eda-05172a0fef5d",1920,"jpg","db751f6ff8138e347a1e35f92c232c48"),
-      im("ffd8056c-1590-41b0-b897-404d49a14608",1920,"jpg","142823bff54b87d04e1cd78738af7dba")
-    ]
-  },
-  {
-    slug: "modius", name: "Modius", sector: "Car-share co-op", scope: "Symbol · Wordmark · Digital",
-    tags: ["identity","digital"], type: "Avenir",
-    palette: ["#1f4e79", "#7fa7c9", "#ffffff"], paletteNames: "Calm blues, white",
-    intro: "A member-owned car share co-operative. Members pay a modest fee and book shared cars across the community for errands, commutes and trips.",
-    body: [
-      "Unlike commercial car-share companies, the co-op is not-for-profit and governed by its members. The identity needed to feel trustworthy and calm rather than flashy.",
-      "A simple geometric symbol and an Avenir wordmark sit on a cool blue palette built for print and screen. The digital work sets the groundwork for the website, print and signage to follow."
-    ],
-    cover: [im("a7579ded-db5b-4bbd-b96e-1cf6b6df7bb1",3840,"jpg","856459531405d4a6afd252f2afc02307"), im("81c6da3d-aff6-4e7b-af73-884052946c7d",1920,"jpg","41bf52d9b41530ed52cd73a02f852562")],
-    images: [
-      im("1af116b7-8ce9-4fd0-9609-7c0cadf6c850",1920,"jpg","8153eb4cd08a647bd69270b1492c4586"),
-      im("de80a6a3-e0f8-4656-9c37-6467aa6dce49",3840,"jpg","8e9658d543684e4ebef06eb29101625b"),
-      im("2bd9dd40-2606-48d2-9f48-68b7d3227ad7",1920,"jpg","7db1481200fa05b34ce8543476df7fae"),
-      im("375191ce-520b-40d0-9738-a48bebe4d9c5",1920,"jpg","b78419fda67c6b02365fe5f0d0d37353")
-    ]
-  },
-  {
-    slug: "mode", name: "Mode", sector: "Furniture", scope: "Identity · Website",
-    tags: ["identity","digital"], type: "Cubic custom wordmark",
-    palette: ["#a8998a", "#6b7178", "#d8ccb8"], paletteNames: "Warm taupe, soft slate, muted sand",
-    intro: "A modern furniture brand built on clean lines, clear structure and pieces meant to last.",
-    body: [
-      "The wordmark is a cube split cleanly into four quadrants: modularity, balance and good use of space in a single shape. A flexible two-colour system in taupe, slate and sand sits easily in almost any interior.",
-      "The website follows the furniture. Geometric graphics, structured framing and a strong grid keep the experience as quiet and precise as the products."
-    ],
-    cover: [im("06d3d90a-61f2-4b66-bb4b-052185a9ad0e",1920,"jpg","0ffe0d84ccba4b2d6f77cc1ce1ae9c96"), im("6a5a1cce-9136-447a-ae78-911709db7c43",1920,"jpg","ddd0b153b85220188fc92dca54943019")],
-    images: [
-      im("c826f1c5-54c8-4e23-a0cc-4660d2308a61",1920,"jpg","72dd04b955646a52199898ad926acc30"),
-      im("b6926010-4242-4477-9506-db6bb32bc608",1920,"jpg","cd1c86c8a441f684e69ad2205d933e6a"),
-      im("fd673e23-7e38-4cf5-9abc-f607064d0c7f",1920,"jpg","505e4ea666ec4f4cc7ad30357dac8ce1"),
-      im("7dffb392-3fc6-4386-a0ab-a933468c4099",1920,"jpg","36302e285f1ef5fd1f9313efda83b965"),
-      im("51bf3e72-6e07-4fb4-a170-796719e9a4cf",1920,"jpg","72dd66c0bdba3e8e753e03878ee5b496")
-    ]
-  },
-  {
-    slug: "brock", name: "Brock", sector: "Menswear", scope: "Lookbook · Print · Digital",
-    tags: ["print","digital"], type: "Architectural sans",
-    palette: ["#111111", "#ffffff", "#8c8a85"], paletteNames: "Black, white, stone",
-    intro: "Urban menswear at the meeting point of architecture and street culture: precise tailoring, premium textiles and understated luxury.",
-    body: [
-      "This work carries Brock's identity into print and digital lookbooks. The brief was to sit between everyday comfort and modern style.",
-      "In a crowded media landscape, the layouts rely on clean structure, deliberate negative space and a refined presence. The clothes get room to speak."
-    ],
-    cover: [im("94045c30-6263-44c5-9397-5a5303aa3926",1920,"jpg","83e181eb9d823a5a31d5341626a401e9"), im("e4b524b7-adbd-4243-b7d4-2b10daba6503",1920,"jpg","03f059357892a638b0eca9db5814a339")],
-    images: [
-      im("c755aed5-6057-4743-8812-697b71d638dc",1920,"jpg","2acb417e2a987626345c7599a6849a02"),
-      im("19421b59-b124-4fe0-82ac-f6dc0dce35d7",1920,"jpg","ce9bdaffb9c023978fd46c3069e5774a"),
-      im("95a1d8d6-90e6-4496-b3c5-3c2c0817d29e",1920,"jpg","d8101e2f4348460a2d1961f9ba354451"),
-      im("8763ec54-c432-4ce7-9f3d-040b51fd3f67",1920,"jpg","4eb066a1dc04d57a77112e9432a6e1fa"),
-      im("3d06ad52-fac2-428c-a751-cc593556effc",1920,"jpg","2ee459f6e9a45a4256a56dcc3d228656"),
-      im("8372e561-bd91-4692-a70c-b2b800bd8b63",1920,"jpg","128ac0bc906a98221fac6f432c6355bf"),
-      im("7532f1ee-76b2-4099-9ea0-4b7fa8cc933e",1920,"jpg","eb4abae4f1451945751f278030ab8d73")
-    ]
-  }
-];
-
-const SERVICES = [
-  ["Identity", "Logos, wordmarks and symbols drawn for your business, with the colour and type to go with them."],
-  ["Brand systems", "Guidelines, stationery, menus, packaging and collateral, so every touchpoint looks like it belongs."],
-  ["Digital", "Websites, social templates and app interfaces that carry the identity onto the screen."],
-  ["Signage & print", "Storefronts, wayfinding and printed pieces, prepared properly for your printer or fabricator."]
-];
-const PROCESS = [
-  ["Inquiry", "Tell us about your business and what you want to make."],
-  ["Conversation", "A short call about your goals, timeline and budget."],
-  ["Free proposal", "A clear scope and a fixed quote. No cost, no obligation."],
-  ["Design & delivery", "We design, refine with you, and hand over every file you need."]
-];
-
-const $ = (s, el = document) => el.querySelector(s);
-const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const AR = '<span class="arr" aria-hidden="true">→</span>';
-const AMP = '<span class="amp">&amp;</span>';
-const pad = n => String(n).padStart(2, "0");
-
-/* ---------- Pieces ---------- */
-const frame = (p, eager) => `<div class="frame"><img src="${p.cover[0].src}" alt="${esc(p.name)}, ${esc(p.sector.toLowerCase())} identity" loading="${eager ? "eager" : "lazy"}" decoding="async"><img class="alt" src="${p.cover[1].src}" alt="" loading="lazy" decoding="async"></div>`;
-
-function viewHome() {
-  return `<div class="view">
-  <section class="wrap hero">
-    <div class="mast" aria-label="I and CA"><span class="l">I</span><span class="amp">&amp;</span><span class="l">CA</span></div>
-    <div class="hero-grid">
-      <h1>Identity for the <em>independent</em>.</h1>
-      <div class="side">
-        <p class="lede">A Vancouver design studio making logos, brand identities and websites for small businesses. Studio-quality work, sized for the business you actually run.</p>
-        <div class="hero-actions"><a class="btn" href="#contact">Request a free proposal ${AR}</a><a class="ghost" href="#work">See the work</a></div>
-      </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="sel" style="padding-top:clamp(24px,4vw,56px)">
-    <div class="wrap reel-head"><span class="mono" id="sel">Selected work · <span id="reel-n">01</span> / ${pad(PROJECTS.length)}</span>
-      <div class="reel-ctrl"><button class="circ" id="rp" type="button" aria-label="Previous project">←</button><button class="circ" id="rn" type="button" aria-label="Next project">→</button></div></div>
-    <div class="reel" id="reel" tabindex="0" aria-label="Selected projects, swipe to browse">${withCopies(PROJECTS, REEL_COPIES).map(({ item: p, copy }, i) => `<a class="slide${copy ? " clone" : ""}" href="#${p.slug}"${copy ? ' tabindex="-1" aria-hidden="true"' : ""}>${frame(p, !copy && i < REEL_COPIES + 2)}<div class="cap"><h3>${esc(p.name)}</h3><span class="mono">${esc(p.sector)}</span></div></a>`).join("")}</div>
-    <div class="wrap"><div class="progress" aria-hidden="true"><span id="reel-bar"></span></div></div>
-  </section>
-
-  <section class="wrap section">
-    <div class="eyebrow mono">The studio</div>
-    <div class="split">
-      <p class="statement">The corner bakery deserves the same care as the <em>global brand</em>.</p>
-      <div class="body-lg"><p>Most studios compete for a few large accounts. We build for the bakeries, makers, co-ops and local cornerstones, and give each one an identity designed to last.</p><a class="ghost" href="#about" style="justify-self:start">About the studio ${AR}</a></div>
-    </div>
-  </section>
-
-  <section class="night section" aria-labelledby="why">
-    <div class="wrap">
-      <div class="eyebrow mono">Who we design for</div>
-      <div class="grid2">
-        <div class="fig" aria-hidden="true">98<sup>%</sup></div>
-        <div style="display:grid;gap:18px">
-          <h2 id="why">of Canadian businesses have fewer than 100 employees. They are who we work for.</h2>
-          <p>Small businesses are almost the whole economy, yet good design is usually priced for the few at the top. I&amp;CA exists to close that gap.</p>
-          <p class="src mono">1.35M of 1.37M employer businesses · 1–99 employees</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap section" aria-labelledby="svc">
-    <div class="eyebrow mono" id="svc">What we make</div>
-    <ul class="svc">${SERVICES.map(([t, d]) => `<li><h3>${t.replace("&", AMP)}</h3><p>${d}</p></li>`).join("")}</ul>
-  </section>
-
-  <section class="wrap section" aria-labelledby="how" style="padding-top:0">
-    <div class="eyebrow mono" id="how">How a project runs</div>
-    <ol class="steps">${PROCESS.map(([t, d]) => `<li><h3>${t.replace("&", AMP)}</h3><p>${d}</p></li>`).join("")}</ol>
-  </section>
-
-  <section class="wrap" aria-labelledby="go">
-    <div class="cta">
-      <h2 id="go">Let's make something that <em>lasts</em>.</h2>
-      <div class="act"><a class="btn" href="#contact">Start a project ${AR}</a><span class="mono">Free proposal · Reply within one business day</span></div>
-    </div>
-  </section>
-  </div>`;
-}
-
-let filter = "all";
-function viewWork() {
-  const F = [["all", "All work"], ["identity", "Identity"], ["digital", "Digital"], ["print", "Print"]];
-  return `<div class="view">
-  <section class="wrap page-head"><h1>Selected <em>work</em></h1><p class="lede">Identities, websites and print for independent businesses, from a neighbourhood bakery to a strata app.</p></section>
-  <div class="wrap">
-    <div class="toolbar">
-      <div class="chips" role="group" aria-label="Filter by discipline">${F.map(([k, l]) => `<button class="chip" type="button" data-f="${k}" aria-pressed="${k === filter}">${l}</button>`).join("")}</div>
-    </div>
-    <div id="work-list" aria-live="polite"></div>
-  </div></div>`;
-}
-/* One swipeable strip per client: key visual first, then the project images.
-   Copies of the last two images sit before the first, and copies of the first two after the last.
-   Swiping past either end lands on a copy and we silently jump to the matching real slide: a loop.
-   Two copies (not one) so the slivers peeking in on each side are identical before and after the jump. */
-function tileStrip(p, i) {
-  const imgs = [p.cover[0], ...p.images];
-  const clone = m => `<a href="#${p.slug}" tabindex="-1" aria-hidden="true" class="clone"><img src="${m.src}" alt="" loading="lazy" decoding="async"></a>`;
-  return `<article class="tile" aria-label="${esc(p.name)}">
-    <div class="strip-wrap">
-      <div class="strip" tabindex="0" aria-label="${esc(p.name)} images, swipe to browse">${clone(imgs[imgs.length - 2] || imgs[imgs.length - 1])}${clone(imgs[imgs.length - 1])}${imgs.map((m, k) => `<a href="#${p.slug}" tabindex="${k ? -1 : 0}"><img src="${m.src}" alt="${esc(p.name)}, image ${k + 1} of ${imgs.length}" loading="${i < 2 && k < 2 ? "eager" : "lazy"}" decoding="async"></a>`).join("")}${clone(imgs[0])}${clone(imgs[1] || imgs[0])}</div>
-      <span class="count" aria-hidden="true">01 / ${pad(imgs.length)}</span>
-      <div class="strip-arrows"><button class="circ" type="button" data-dir="-1" aria-label="Previous ${esc(p.name)} image">←</button><button class="circ" type="button" data-dir="1" aria-label="Next ${esc(p.name)} image">→</button></div>
-    </div>
-    <div class="progress" aria-hidden="true"><span></span></div>
-    <a class="tile-cap" href="#${p.slug}"><h3>${esc(p.name)}</h3><span class="go">View project ${AR}</span></a>
-    <div class="sub"><span>${esc(p.sector)}</span><span aria-hidden="true">·</span><span>${esc(p.scope)}</span></div>
-  </article>`;
-}
-/* ---------- Infinite loop engine (shared) ----------
-   The row holds C copies of the last items, then the real items, then C copies of the first items.
-   When a swipe stops on a copy, we jump instantly to its real twin, which looks identical,
-   so the row seems endless. C must cover everything visible at once, so the seam always matches. */
-const REEL_COPIES = 4;
-function withCopies(items, C) {
-  const n = items.length, at = k => items[((k % n) + n) % n];
-  return [...Array(C)].map((_, k) => ({ item: at(k - C), copy: true }))
-    .concat(items.map(item => ({ item, copy: false })))
-    .concat([...Array(C)].map((_, k) => ({ item: at(k), copy: true })));
-}
-function makeLoop(row, C, onShow) {
-  const slides = row.children, total = slides.length - 2 * C;
-  const pos = k => slides[k].offsetLeft - slides[0].offsetLeft;
-  const at = () => Math.round(row.scrollLeft / (pos(1) || row.clientWidth));
-  const realOf = k => ((k - C) % total + total) % total;
-  const freeze = fn => {                                     // move instantly with snapping paused
-    row.style.scrollSnapType = "none"; fn();
-    requestAnimationFrame(() => requestAnimationFrame(() => { row.style.scrollSnapType = ""; }));
-  };
-  const jump = k => freeze(() => { row.scrollLeft = pos(k); });
-  // Hop from a copy to its real twin by their exact on-screen distance (fractions of a pixel included),
-  // so what's on screen lands in exactly the same place: no half-pixel shimmer at the seam.
-  const hop = (from, to) => freeze(() => { row.scrollLeft += slides[to].getBoundingClientRect().left - slides[from].getBoundingClientRect().left; });
-  let shown = -1, ticking = false, idle = 0, target = null, warmed = false;
-  const show = () => {
-    const real = realOf(at());
-    if (real === shown) return;
-    onShow(real, total, shown !== -1 && Math.abs(real - shown) > 1);
-    shown = real;
-  };
-  const settle = () => {                                     // swipe stopped: on a copy? hop to its twin
-    target = null;
-    const k = at();
-    if (k < C) hop(k, k + total); else if (k >= C + total) hop(k, k - total);
-    show();
-  };
-  const warm = () => {                                       // first touch: load the images around both seams
-    if (warmed) return; warmed = true;
-    [...slides].forEach((sl, k) => { if (k < 2 * C || k >= total) sl.querySelectorAll("img").forEach(img => img.loading = "eager"); });
-  };
-  row.addEventListener("scroll", () => {
-    warm();
-    if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; show(); }); }
-    clearTimeout(idle); idle = setTimeout(settle, 180);
-  }, { passive: true });
-  row.addEventListener("pointerenter", warm, { once: true });
-  row.addEventListener("touchstart", warm, { once: true, passive: true });
-  const move = d => {                                        // arrows: plan from where we're heading, not mid-glide
-    clearTimeout(idle);
-    let k = target ?? at();
-    if (k < C) { hop(k, k + total); k += total; } else if (k >= C + total) { hop(k, k - total); k -= total; }
-    target = k + d;
-    row.scrollTo({ left: pos(target), behavior: "smooth" });
-  };
-  row._reset = () => { jump(C + (shown < 0 ? 0 : shown)); shown = -1; show(); };
-  jump(C); show();                                           // start on the first real item
-  return { move };
-}
-const showBar = (bar, real, total, wrapped) => {             // progress line: one segment per item, wraps instantly
-  if (wrapped) bar.style.transition = "none";
-  bar.style.width = (100 / total) + "%";
-  bar.style.transform = `translateX(${real * 100}%)`;
-  if (wrapped) requestAnimationFrame(() => { bar.style.transition = ""; });
-};
-
-function wireStrips() {
-  $$(".tile").forEach(t => {
-    const strip = $(".strip", t), count = $(".count", t), bar = $(".progress span", t);
-    const loop = makeLoop(strip, 2, (real, total, wrapped) => {
-      count.textContent = `${pad(real + 1)} / ${pad(total)}`;
-      showBar(bar, real, total, wrapped);
-    });
-    $$(".strip-arrows button", t).forEach(btn => btn.onclick = () => loop.move(+btn.dataset.dir));
-    strip.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); loop.move(e.key === "ArrowRight" ? 1 : -1); } });
-  });
-}
-addEventListener("resize", () => $$(".strip, .reel").forEach(r => r._reset && r._reset()));
-function renderWork() {
-  const list = PROJECTS.filter(p => filter === "all" || p.tags.includes(filter));
-  $("#work-list").innerHTML = `<div class="tiles">${list.map((p, i) => tileStrip(p, i)).join("")}</div>`;
-  $$("[data-f]").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filter));
-  wireStrips();
-}
-
-function viewProject(p) {
-  const i = PROJECTS.indexOf(p), next = PROJECTS[(i + 1) % PROJECTS.length];
-  const halves = p.images.some(m => m.w <= 1200);
-  return `<article class="view">
-  <header class="wrap p-top">
-    <div class="crumbs"><a class="back" href="#work"><span class="arr" aria-hidden="true">←</span> All work</a><span class="mono">${pad(i + 1)} / ${pad(PROJECTS.length)}</span></div>
-    <h1 class="p-title">${esc(p.name)}</h1>
-    <div class="p-sub"><span class="mono">${esc(p.sector)}</span><span class="tag">Studio concept</span></div>
-  </header>
-  <div class="wrap"><figure class="p-cover bleed" data-i="cover" style="margin-top:0;margin-bottom:0"><img src="${p.cover[0].src}" alt="${esc(p.name)} key visual" fetchpriority="high"></figure></div>
-  <section class="wrap p-intro">
-    <p class="lead">${esc(p.intro)}</p>
-    <dl class="facts">
-      <div class="wide"><dt class="mono">Scope</dt><dd>${esc(p.scope)}</dd></div>
-      <div><dt class="mono">Sector</dt><dd>${esc(p.sector)}</dd></div>
-      <div><dt class="mono">Type</dt><dd>${esc(p.type)}</dd></div>
-      <div class="wide"><dt class="mono">Palette</dt><dd><div class="sws">${p.palette.map(c => `<span class="sw" style="background:${c}" title="${c}"></span>`).join("")}</div><span style="color:var(--muted);font-size:14px">${esc(p.paletteNames)}</span></dd></div>
-    </dl>
-    <div class="p-text">${p.body.map(b => `<p>${esc(b)}</p>`).join("")}</div>
-  </section>
-  <section class="wrap" aria-label="${esc(p.name)} images">
-    <div class="gallery${halves ? " has-halves" : ""}">${p.images.map((m, n) => `<figure class="${m.w <= 1200 ? "half" : ""}" data-i="${n}"><img src="${m.src}" alt="${esc(p.name)}, image ${n + 1} of ${p.images.length}" loading="${n < 2 ? "eager" : "lazy"}" decoding="async"></figure>`).join("")}</div>
-    <a class="next" href="#${next.slug}"><div class="row"><span class="mono">Next project</span><span class="mono">${esc(next.sector)} ${AR}</span></div><h2>${esc(next.name)}</h2>${frame(next)}</a>
-  </section>
-  </article>`;
-}
-
-function viewAbout() {
-  return `<div class="view">
-  <section class="wrap page-head"><h1>The <em>studio</em></h1></section>
-  <section class="wrap" style="display:grid;gap:clamp(40px,6vw,72px)">
-    <div class="split" style="align-items:start">
-      <p class="statement" style="font-size:clamp(28px,3.6vw,54px)">Good design should not be reserved for <em>big budgets</em>.</p>
-      <div class="body-lg">
-        <p>I&amp;CA, Industrial &amp; Communication Arts, started from a simple observation: small businesses were being quoted big-studio prices for work that often did not deserve them.</p>
-        <p>So we built a studio around the other 98%. We work with founders directly, keep the process lean, and put the hours into the design rather than the overhead.</p>
-        <p>We are based in Metro Vancouver and work remotely with clients anywhere. Every project starts with a conversation and a free, fixed-price proposal.</p>
-      </div>
-    </div>
-    <figure class="about-mark bleed" style="margin-top:0;margin-bottom:0"><img src="${HERO.src}" alt="The I&amp;CA mark over the Vancouver waterfront, in black and white" loading="lazy"></figure>
-  </section>
-  <section class="wrap section" aria-labelledby="pr">
-    <div class="eyebrow mono" id="pr">How we work</div>
-    <ul class="principles">
-      <li><h3>Built as a <em>system</em></h3><p>A logo alone does not carry a business. We design the colour, type and rules around it, so your sign, website and receipts all look like the same company.</p></li>
-      <li><h3>Simple before <em>clever</em></h3><p>Marks that reproduce cleanly at any size, in one colour, on any surface. If it does not work on a coffee cup and a storefront, it does not work.</p></li>
-      <li><h3>Clear scope, <em>fixed price</em></h3><p>You see the full scope and cost in the proposal before we start. No hourly surprises.</p></li>
-      <li><h3>Everything is <em>yours</em></h3><p>At hand-off you get every file in every format, plus guidelines that make it easy for anyone to use them correctly.</p></li>
-    </ul>
-  </section>
-  <section class="wrap" aria-labelledby="svc2" style="padding-bottom:clamp(80px,10vw,140px)">
-    <div class="eyebrow mono" id="svc2">Services</div>
-    <ul class="svc">${SERVICES.map(([t, d]) => `<li><h3>${t.replace("&", AMP)}</h3><p>${d}</p></li>`).join("")}</ul>
-  </section>
-  <section class="wrap"><div class="cta"><h2>Have a business that deserves a <em>better brand</em>?</h2><div class="act"><a class="btn" href="#contact">Request a free proposal ${AR}</a></div></div></section>
-  </div>`;
-}
-
-function viewContact() {
-  const needs = ["Logo", "Brand identity", "Website", "Signage", "Print", "Not sure yet"];
-  return `<div class="view">
-  <section class="wrap contact">
-    <div>
-      <span class="mono">Contact</span>
-      <h1 style="margin-top:18px">Let's talk about your <em>brand</em>.</h1>
-      <p style="color:var(--muted);margin-top:22px;max-width:42ch">Tell us a little about your business and what you need. We reply within one business day, and every proposal is free.</p>
-      <div class="mail-card"><span class="mono">Or write directly</span><a class="addr" href="mailto:kevin@iandca.ca">kevin@iandca.ca</a><div class="mail-row"><button class="ghost" type="button" data-copy="kevin@iandca.ca">Copy email</button><a class="ghost" href="mailto:kevin@iandca.ca">Open mail app</a></div></div>
-      <ol class="steps" style="margin-top:44px;grid-template-columns:1fr">${PROCESS.slice(0, 3).map(([t, d]) => `<li style="padding:0 0 30px 44px"><h3>${t}</h3><p>${d}</p></li>`).join("")}</ol>
-    </div>
-    <form id="cform" novalidate>
-      <div class="two">
-        <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
-        <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" inputmode="email" autocomplete="email" required></div>
-      </div>
-      <div class="field"><label for="f-biz">Business <span style="text-transform:none;letter-spacing:0">(optional)</span></label><input id="f-biz" name="business" autocomplete="organization"></div>
-      <fieldset><legend>What do you need?</legend><div class="need">${needs.map((n, i) => `<label class="chip"><input type="checkbox" id="need-${i}" name="needs" value="${n}">${n}</label>`).join("")}</div></fieldset>
-      <div class="field"><label for="f-budget">Budget</label><select id="f-budget" name="budget"><option value="">Choose a range</option><option>Under $2,500</option><option>$2,500 – $5,000</option><option>$5,000 – $10,000</option><option>$10,000+</option><option>Not sure yet</option></select></div>
-      <div class="field"><label for="f-msg">About the project</label><textarea id="f-msg" name="message" required placeholder="What does your business do, and what would you like to make?"></textarea></div>
-      <p class="err" id="f-err" role="alert" hidden></p>
-      <div class="send"><button class="btn" type="submit">Send inquiry ${AR}</button><span class="mono">Free proposal · No obligation</span></div>
-    </form>
-  </section></div>`;
-}
-
-/* ---------- Router ---------- */
-/* We decide where the page sits, not the browser: no restoring old scroll positions on back/forward. */
-try { history.scrollRestoration = "manual"; } catch (e) {}
-function toTop() {
-  const html = document.documentElement, prev = html.style.scrollBehavior;
-  html.style.scrollBehavior = "auto";
-  window.scrollTo(0, 0); html.scrollTop = 0; document.body.scrollTop = 0;
-  html.style.scrollBehavior = prev;
-}
-const main = $("#main");
-function route() {
-  const key = (location.hash || "#home").slice(1).toLowerCase();
-  const proj = PROJECTS.find(p => p.slug === key);
-  let html, nav = "home", title = "I&CA · Identity for the independent";
-  if (proj) { html = viewProject(proj); nav = "work"; title = `${proj.name} · I&CA`; }
-  else if (key === "work") { html = viewWork(); nav = "work"; title = "Work · I&CA"; }
-  else if (key === "about") { html = viewAbout(); nav = "about"; title = "Studio · I&CA"; }
-  else if (key === "contact") { html = viewContact(); nav = "contact"; title = "Contact · I&CA"; }
-  else html = viewHome();
-  main.innerHTML = html;
-  document.title = title;
-  $$("[data-nav]").forEach(a => a.dataset.nav === nav ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
-  toTop();
-  requestAnimationFrame(toTop);                      // once more after the new page has laid out
-  if (typeof setDock === "function") { travel = 0; lastY = 0; setDock(false); }
-  if (key === "work") { wireWork(); }
-  if (proj) wireGallery(proj);
-  if (key === "contact") wireForm();
-  if (!proj && !["work", "about", "contact"].includes(key)) wireReel();
-}
-addEventListener("hashchange", () => { route(); main.focus({ preventScroll: true }); });
-document.addEventListener("click", e => {
-  const a = e.target.closest('a[href^="#"]');
-  if (!a || a.closest(".strip")) return;
-  const want = a.getAttribute("href") || "#home", now = location.hash || "#home";
-  if (want === now) { e.preventDefault(); window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
-});
-
-/* ---------- Reel: swipe carousel with counter and progress ---------- */
-function wireReel() {
-  const reel = $("#reel"); if (!reel) return;
-  const n = $("#reel-n"), bar = $("#reel-bar");
-  const loop = makeLoop(reel, REEL_COPIES, (real, total, wrapped) => {
-    n.textContent = pad(real + 1);
-    showBar(bar, real, total, wrapped);
-  });
-  $("#rp").onclick = () => loop.move(-1);
-  $("#rn").onclick = () => loop.move(1);
-  reel.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); loop.move(e.key === "ArrowRight" ? 1 : -1); } });
-}
-
-/* ---------- Work: filters ---------- */
-function wireWork() {
-  $$("[data-f]").forEach(b => b.onclick = () => { filter = b.dataset.f; renderWork(); });
-  renderWork();
-}
-
-/* ---------- Lightbox: native swipe via scroll-snap ---------- */
-const lb = $("#lb"), track = $("#lb-track"), lbCount = $("#lb-count");
-let lbN = 0;
-function wireGallery(p) {
-  const set = [p.cover[0], ...p.images];
-  track.innerHTML = set.map((m, k) => `<figure><img src="${m.src}" alt="${esc(p.name)}, image ${k + 1} of ${set.length}" loading="lazy" decoding="async"></figure>`).join("");
-  lbN = set.length;
-  const open = k => { lb.showModal(); requestAnimationFrame(() => { track.scrollTo({ left: k * track.clientWidth, behavior: "instant" }); count(); }); };
-  $$(".gallery figure, .p-cover").forEach(f => {
-    const k = f.dataset.i === "cover" ? 0 : +f.dataset.i + 1;
-    f.tabIndex = 0; f.setAttribute("role", "button"); f.setAttribute("aria-label", "View image full screen");
-    f.onclick = () => open(k);
-    f.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(k); } };
-  });
-}
-const cur = () => Math.round(track.scrollLeft / track.clientWidth);
-const count = () => lbCount.textContent = `${pad(cur() + 1)} / ${pad(lbN)}`;
-track.addEventListener("scroll", () => requestAnimationFrame(count), { passive: true });
-const go = d => track.scrollTo({ left: Math.max(0, Math.min(lbN - 1, cur() + d)) * track.clientWidth, behavior: "smooth" });
-$("#lb-prev").onclick = () => go(-1);
-$("#lb-next").onclick = () => go(1);
-$("#lb-x").onclick = () => lb.close();
-lb.addEventListener("keydown", e => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); });
-track.addEventListener("click", e => { if (e.target.tagName === "FIGURE") lb.close(); });
-
-/* ---------- Contact form ----------
-   No server yet: submitting opens the visitor's email app with the inquiry filled in.
-   To receive inquiries directly, connect a form service (e.g. Formspree) later. */
-function wireForm() {
-  const form = $("#cform"), err = $("#f-err");
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    const d = new FormData(form), miss = [];
-    [["name", "your name"], ["email", "a valid email"], ["message", "a few words about the project"]].forEach(([k, l]) => {
-      const el = form.elements[k], bad = !String(d.get(k) || "").trim() || !el.checkValidity();
-      el.closest(".field").classList.toggle("invalid", bad); if (bad) miss.push(l);
-    });
-    if (miss.length) { err.hidden = false; err.textContent = `Please add ${miss.join(", ")}.`; form.querySelector(".invalid input, .invalid textarea")?.focus(); return; }
-    const body = [`Name: ${d.get("name")}`, `Email: ${d.get("email")}`, `Business: ${d.get("business") || "-"}`, `Needs: ${d.getAll("needs").join(", ") || "-"}`, `Budget: ${d.get("budget") || "-"}`, "", d.get("message")].join("\n");
-    location.href = `mailto:kevin@iandca.ca?subject=${encodeURIComponent("Project inquiry from " + d.get("name"))}&body=${encodeURIComponent(body)}`;
-    form.outerHTML = `<div class="done"><span class="mono">One more step</span><h2>Your email app should open with the inquiry ready to send.</h2><p>Press send there and we will reply within one business day. If nothing opened, write to kevin@iandca.ca.</p></div>`;
-  });
-}
-
-/* ---------- Global: copy email, header shadow, dock hide-on-scroll, clock ---------- */
-const toast = $("#toast");
-document.addEventListener("click", async e => {
-  const b = e.target.closest("[data-copy]"); if (!b) return;
-  try { await navigator.clipboard.writeText(b.dataset.copy); toast.textContent = "Email copied"; }
-  catch { toast.textContent = b.dataset.copy; }
-  toast.classList.add("on"); setTimeout(() => toast.classList.remove("on"), 1800);
-});
-const headEl = $("#top"), dock = $("#dock");
-/* Hide the dock only after a deliberate scroll down (48px), show after 24px up.
-   Bounce at the top/bottom and tiny momentum jitters are ignored, and we only
-   touch the page when the state actually changes (once per frame at most). */
-let lastY = Math.max(0, scrollY), travel = 0, dockHidden = false, scrolled = false, ticking = false;
-function setDock(hide) { if (hide !== dockHidden) { dockHidden = hide; dock.classList.toggle("away", hide); } }
-function onScrollFrame() {
-  ticking = false;
-  const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
-  const y = Math.min(Math.max(scrollY, 0), max);          // clamp away the rubber-band bounce
-  const dy = y - lastY; lastY = y;
-  const s = y > 8; if (s !== scrolled) { scrolled = s; headEl.classList.toggle("scrolled", s); }
-  if (!dy) return;
-  if ((dy > 0) !== (travel > 0)) travel = 0;               // direction changed: start counting again
-  travel += dy;
-  if (y < 120 || y > max - 80) setDock(false);             // always visible near the top and bottom
-  else if (travel > 48) setDock(true);
-  else if (travel < -24) setDock(false);
-}
-addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScrollFrame); } }, { passive: true });
-const fmt = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver", hour: "2-digit", minute: "2-digit", hour12: false });
-const tick = () => $$(".clock").forEach(c => c.textContent = fmt.format(new Date()));
-tick(); setInterval(tick, 15000);
-$("#yr").textContent = new Date().getFullYear();
-
-route();
-</script>
-</body>
+    <!-- Small message that pops up after "Copy email" -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
 </html>
