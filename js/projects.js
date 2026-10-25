@@ -39,7 +39,7 @@ function image(file, width, adobe) {
   };
 }
 
-/* The animated I&CA mark over the Vancouver waterfront (About page) */
+/* The animated showreel of I&CA's work, opening on the I&CA wordmark (About page) */
 const HERO = image("studio/hero.gif", 3840, "05802ab3-43ad-4ce5-8d1b-3721f42a68ec_rw_3840.gif?h=b9168cd53a4a7091f825a2be7d2b26db");
 
 

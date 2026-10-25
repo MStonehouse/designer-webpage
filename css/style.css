@@ -134,7 +134,6 @@ body {
   color: var(--ink);
   font: 300 17px/1.6 var(--sans);
   -webkit-font-smoothing: antialiased;
-  padding-bottom: var(--dock-h);
 }
 img {
   max-width: 100%;
@@ -321,7 +320,10 @@ body::before {
   padding: 5px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--night) 96%, transparent);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.45);
+  /* A faint light edge keeps the pill's shape when it sits over the charcoal footer */
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.09),
+    0 10px 30px -10px rgba(0, 0, 0, 0.45);
   /* Showing: quick and responsive */
   transition:
     transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -912,7 +914,9 @@ button:hover .arr {
 footer {
   background: var(--night);
   color: var(--night-ink);
-  padding-block: clamp(64px, 9vw, 120px) 28px;
+  /* The bottom padding includes room for the phone menu (--dock-h is 0 on desktop),
+     so the footer's charcoal runs right to the bottom of the screen behind the menu. */
+  padding-block: clamp(64px, 9vw, 120px) calc(28px + var(--dock-h));
   margin-top: clamp(72px, 10vw, 140px);
 }
 footer .mono {

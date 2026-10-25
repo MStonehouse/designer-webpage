@@ -354,7 +354,7 @@ function viewAbout() {
             <p>We are based in Metro Vancouver and work remotely with clients anywhere. Every project starts with a conversation and a free, fixed-price proposal.</p>
           </div>
         </div>
-        <figure class="about-mark bleed">${imageTag(HERO, "The I&CA mark over the Vancouver waterfront, in black and white", 'loading="lazy"')}</figure>
+        <figure class="about-mark bleed">${imageTag(HERO, "Animated showreel of I&CA's identity work, opening on the I&CA wordmark", 'loading="lazy"')}</figure>
       </section>
 
       <section class="wrap section" aria-labelledby="pr">
