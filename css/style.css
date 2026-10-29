@@ -127,6 +127,12 @@
 html {
   -webkit-text-size-adjust: 100%;
   overflow-anchor: none;
+  /* The colour a phone shows when the page bounces past its top or bottom edge.
+     It turns charcoal once you reach the footer (see "Page edges" in js/main.js). */
+  background: var(--paper);
+}
+html.at-footer {
+  background: var(--night);
 }
 body {
   margin: 0;

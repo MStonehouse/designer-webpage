@@ -529,7 +529,10 @@ function route() {
   );
 
   toTop();
-  requestAnimationFrame(toTop); // once more, after the new page has laid out
+  requestAnimationFrame(() => {
+    toTop(); // once more, after the new page has laid out
+    updatePageEdges();
+  });
   travel = 0;
   lastY = 0;
   setDock(false);
@@ -885,6 +888,7 @@ function onScrollFrame() {
     scrolled = isScrolled;
     header.classList.toggle("scrolled", isScrolled);
   }
+  updatePageEdges();
 
   if (!dy) return;
   if (dy > 0 !== travel > 0) travel = 0; // direction changed: start counting again
@@ -895,6 +899,26 @@ function onScrollFrame() {
   else if (travel > 48) setDock(true);
   else if (travel < -24) setDock(false);
 }
+
+/* Page edges: once the footer fills the lower half of the screen, the space around the page
+   turns charcoal to match it. That's what shows when an iPhone bounces past the bottom of the
+   page, and the colour browsers that support it use to tint their toolbars. Further up the
+   page it's the light background again, so nothing changes on screen while you read. */
+const footer = $("footer");
+const themeColours = $$('meta[name="theme-color"]');
+const normalThemeColours = themeColours.map((meta) => meta.content);
+let atFooter = false;
+
+function updatePageEdges() {
+  const reached = footer.getBoundingClientRect().top < innerHeight / 2;
+  if (reached === atFooter) return;
+  atFooter = reached;
+  document.documentElement.classList.toggle("at-footer", reached);
+  const charcoal = getComputedStyle(footer).backgroundColor;
+  themeColours.forEach((meta, i) => (meta.content = reached ? charcoal : normalThemeColours[i]));
+}
+
+addEventListener("resize", () => updatePageEdges());
 
 addEventListener(
   "scroll",
