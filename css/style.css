@@ -75,6 +75,14 @@
   --night-line: #2c2d30;
   --brass: #84622f; /* the one accent: ampersand, small marks */
   --brass-night: #c6a26a;
+  /* Footer. Light mode uses the page's own colours, so the footer blends into whatever space
+     a browser shows below the page; dark mode keeps the charcoal footer. */
+  --foot-bg: var(--paper);
+  --foot-ink: var(--ink);
+  --foot-muted: var(--muted);
+  --foot-line: var(--line);
+  --foot-accent: var(--brass);
+  --foot-rule: var(--line); /* hairline above the footer */
   --serif: "Bodoni Moda", "Didot", "Bodoni 72", "Playfair Display", Georgia, serif;
   --sans: "Hanken Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -102,6 +110,12 @@
     --night-line: #303135;
     --brass: #c6a26a;
     --brass-night: #c6a26a;
+    --foot-bg: #1a1b1e;
+    --foot-ink: #f1efe9;
+    --foot-muted: #9b9891;
+    --foot-line: #303135;
+    --foot-accent: #c6a26a;
+    --foot-rule: transparent;
     color-scheme: dark;
   }
 }
@@ -117,6 +131,12 @@
   --night-line: #303135;
   --brass: #c6a26a;
   --brass-night: #c6a26a;
+  --foot-bg: #1a1b1e;
+  --foot-ink: #f1efe9;
+  --foot-muted: #9b9891;
+  --foot-line: #303135;
+  --foot-accent: #c6a26a;
+  --foot-rule: transparent;
   color-scheme: dark;
 }
 
@@ -912,15 +932,16 @@ button:hover .arr {
 
 /* ---------- 6b. Footer ---------- */
 footer {
-  background: var(--night);
-  color: var(--night-ink);
+  background: var(--foot-bg);
+  color: var(--foot-ink);
+  box-shadow: inset 0 1px 0 var(--foot-rule);
   /* The bottom padding includes room for the phone menu (--dock-h is 0 on desktop),
-     so the footer's charcoal runs right to the bottom of the screen behind the menu. */
+     so the footer's colour runs right to the bottom of the screen behind the menu. */
   padding-block: clamp(64px, 9vw, 120px) calc(28px + var(--dock-h));
   margin-top: clamp(72px, 10vw, 140px);
 }
 footer .mono {
-  color: var(--night-muted);
+  color: var(--foot-muted);
 }
 .foot {
   display: grid;
@@ -938,12 +959,12 @@ footer .mono {
   letter-spacing: -0.01em;
 }
 .mail:hover {
-  color: var(--brass-night);
+  color: var(--foot-accent);
 }
 .copy-btn {
   background: transparent;
-  border: 1px solid var(--night-line);
-  color: var(--night-ink);
+  border: 1px solid var(--foot-line);
+  color: var(--foot-ink);
   border-radius: 999px;
   padding: 11px 16px;
   font: 400 13px/1 var(--sans);
@@ -951,7 +972,7 @@ footer .mono {
   transition: border-color 0.2s;
 }
 .copy-btn:hover {
-  border-color: var(--night-ink);
+  border-color: var(--foot-ink);
 }
 .foot-cols {
   display: grid;
@@ -967,16 +988,16 @@ footer .mono {
   font-size: 15.5px;
 }
 .foot-cols .note.dim {
-  color: var(--night-muted);
+  color: var(--foot-muted);
 }
 .foot-cols a {
   text-decoration: none;
   font-size: 15.5px;
-  color: var(--night-ink);
+  color: var(--foot-ink);
   padding: 2px 0;
 }
 .foot-cols a:hover {
-  color: var(--brass-night);
+  color: var(--foot-accent);
 }
 @media (min-width: 900px) {
   .foot {
@@ -993,12 +1014,12 @@ footer .mono {
   padding-block: 0.16em 0.05em;
   white-space: nowrap;
   overflow: hidden;
-  color: var(--night-ink);
+  color: var(--foot-ink);
   user-select: none;
 }
 /* the padding gives the tall & and C room inside the cropped box; side cropping still stops sideways scroll */
 .foot-mark .amp {
-  color: var(--brass-night);
+  color: var(--foot-accent);
 }
 .foot-base {
   display: flex;
@@ -1007,7 +1028,7 @@ footer .mono {
   flex-wrap: wrap;
   padding-top: 18px;
   margin-top: 22px;
-  border-top: 1px solid var(--night-line);
+  border-top: 1px solid var(--foot-line);
 }
 
 /* ---------- 7. Work page ---------- */
